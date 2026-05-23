@@ -54,3 +54,28 @@ model Produit {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
+
+model SiteContent {
+  id              Int      @id @default(1)
+  brandName       String   @default("Atelier OLDA")
+  contactEmail    String   @default("")
+  contactPhone    String   @default("")
+  contactLocation String   @default("")
+  metaTitle       String   @default("Atelier OLDA")
+  metaDescription String   @default("")
+  heroTagline     String   @default("")
+  ctaLabel        String   @default("Découvrir nos produits")
+  ctaHref         String   @default("/catalogue")
+  navigation      Json     @default("[]")
+  updatedAt       DateTime @updatedAt
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  groupe       String   @default("standard")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
