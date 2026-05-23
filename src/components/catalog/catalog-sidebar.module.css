@@ -69,7 +69,7 @@
   align-items: center;
   gap: 7px;
   color: #1d1d1f;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -144,10 +144,10 @@
 .subLink {
   display: inline-flex;
   align-items: center;
-  padding: 4px 8px;
+  padding: 4px 8px 4px 12px;
   border-radius: 6px;
   /* Pas de margin-left négatif : le fond de survol ne mordra jamais sur la ligne verticale */
-  color: #8e8e93;
+  color: #374151;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.4;
