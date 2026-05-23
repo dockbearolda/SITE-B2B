@@ -620,6 +620,8 @@
      donc la grille ne déborde jamais sous le panier de droite. */
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 20px;
+  align-items: start; /* chaque carte prend sa hauteur naturelle — évite
+                         l'espace vide sous les cartes "en panier" plus courtes */
 }
 
 /* ── Card ───────────────────────────────────────────────────── */
@@ -730,9 +732,8 @@
   gap: 10px;
 }
 
-/* Zone bouton — toujours ancrée en bas de la carte */
+/* Zone bouton — suit naturellement le contenu (pas de gap artificiel) */
 .itemActions {
-  margin-top: auto;
 }
 
 .itemMeta {
@@ -966,6 +967,7 @@
   .itemGrid {
     display: flex;
     flex-direction: column;
+    align-items: stretch; /* annule align-items:start du desktop */
     gap: 0;
   }
 
