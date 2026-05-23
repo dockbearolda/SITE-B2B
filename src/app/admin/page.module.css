@@ -332,3 +332,54 @@
   font-size: 14px;
   margin: 0 0 24px;
 }
+
+/* ── Tableau de bord ── */
+.dashGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.dashCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  text-decoration: none;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.dashCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashCardTitle {
+  font-size: 17px;
+  font-weight: 650;
+  color: #1d1d1f;
+}
+.dashCardDesc {
+  font-size: 13px;
+  color: #6e6e73;
+  line-height: 1.5;
+}
+
+/* ── Barre d'enregistrement ── */
+.saveBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.saveOk {
+  color: #1a7f37;
+  font-size: 14px;
+  font-weight: 500;
+}
+.saveErr {
+  color: #d03a2e;
+  font-size: 14px;
+  font-weight: 500;
+}
