@@ -821,31 +821,22 @@
 
   /* Pricing compact en vue liste mobile */
   .pricingBlock {
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
     padding: 5px 9px;
     border-radius: 8px;
+    gap: 2px 4px;
   }
 
-  .priceLabelSmall {
-    display: none;
+  .colLabel {
+    font-size: 0.52rem;
   }
 
-  .priceMain {
-    font-size: 0.86rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+  .colVal {
+    font-size: 0.82rem;
   }
 
-  .pricePvc {
-    font-size: 0.7rem;
-  }
-
-  .priceCoef {
-    font-size: 0.64rem;
-    padding: 1px 6px;
+  .marginBadge {
+    font-size: 0.62rem;
+    padding: 1px 7px;
   }
 
   /* Le bouton add-to-cart reste mais compact */
