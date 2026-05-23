@@ -43,6 +43,13 @@ function validateField(field: keyof FormFields, value: string): string | null {
   }
 }
 
+function fmt(n: number): string {
+  return n.toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }) + " €";
+}
+
 function CheckIcon() {
   return (
     <span className={`${styles.fieldIcon} ${styles.fieldIconValid}`} aria-hidden="true">
@@ -254,9 +261,19 @@ export default function CommandePage() {
                         <div className={styles.cartItemInfo}>
                           <span className={styles.cartItemRef}>{item.ref}</span>
                           <span className={styles.cartItemLabel}>{item.label}</span>
-                          {/* Prix masqués temporairement */}
                         </div>
                       </div>
+
+                      {item.prixAchat != null && item.prixAchat > 0 && (
+                        <div className={styles.cartItemSubtotal}>
+                          <span className={styles.cartItemCalc}>
+                            {item.quantity} × {fmt(item.prixAchat)}
+                          </span>
+                          <span className={styles.cartItemLineTotal}>
+                            = {fmt(item.prixAchat * item.quantity)}
+                          </span>
+                        </div>
+                      )}
 
                       <div className={styles.cartItemActions}>
                         <div className={styles.quantityControl}>
@@ -283,10 +300,32 @@ export default function CommandePage() {
               </div>
             </div>
 
-            {/* ── Col 2 : Tableau de rentabilité masqué temporairement ── */}
-
-            {/* ── Col 3 : Formulaire de contact ── */}
+            {/* ── Col 2 : Formulaire de contact ── */}
             <form className={styles.formSection} onSubmit={handleSubmit} noValidate>
+              {/* ── Total commande (haut de la colonne formulaire) ── */}
+              {hasPrices && (
+                <div className={styles.orderTotal}>
+                  <span className={styles.orderTotalLabel}>Total commande</span>
+
+                  <div className={styles.orderTotalRow}>
+                    <span className={styles.orderTotalName}>Investissement B2B</span>
+                    <span className={styles.orderTotalValueLg}>{fmt(totalB2B)}</span>
+                  </div>
+
+                  <div className={styles.orderTotalRow}>
+                    <span className={styles.orderTotalName}>CA Potentiel</span>
+                    <span className={styles.orderTotalValueMd}>{fmt(totalRevente)}</span>
+                  </div>
+
+                  <div className={styles.orderProfitRow}>
+                    <span className={styles.orderProfitName}>Bénéfice net projeté</span>
+                    <span className={styles.orderProfitValue}>
+                      {margeNette >= 0 ? "+" : ""}{fmt(margeNette)}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               <div className={styles.formHeader}>
                 <h2 className={styles.formTitle}>Vos informations</h2>
                 <p className={styles.formSubtitle}>Commande · Retrait en boutique</p>

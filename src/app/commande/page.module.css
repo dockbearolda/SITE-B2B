@@ -46,7 +46,7 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 1fr minmax(280px, 320px) 380px;
+  grid-template-columns: 3fr 2fr;
   gap: 28px;
   align-items: start;
 }
@@ -55,7 +55,11 @@
 
 .cartSection {
   display: grid;
-  gap: 16px;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid rgba(15, 17, 19, 0.1);
+  border-radius: 24px;
+  background: var(--color-surface-strong);
 }
 
 /* ── Col 2 : Rentabilité ── */
@@ -110,7 +114,7 @@
   padding: 14px 18px;
   border: 1px solid rgba(15, 17, 19, 0.08);
   border-radius: 18px;
-  background: var(--color-surface-strong);
+  background: var(--color-bg);
   transition: border-color var(--transition-fast);
 }
 
@@ -119,6 +123,32 @@
   align-items: center;
   gap: 14px;
   min-width: 0;
+  flex: 1;
+}
+
+/* Sous-total par ligne (qté × PU = total) */
+.cartItemSubtotal {
+  display: grid;
+  gap: 1px;
+  justify-items: end;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.cartItemCalc {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.cartItemLineTotal {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  white-space: nowrap;
 }
 
 /* Thumbnail */
@@ -130,7 +160,7 @@
   height: 52px;
   border-radius: 10px;
   overflow: hidden;
-  background: var(--color-bg);
+  background: rgba(15, 17, 19, 0.05);
 }
 
 .thumbImg {
@@ -140,7 +170,7 @@
 .thumbPlaceholder {
   width: 100%;
   height: 100%;
-  background: var(--color-bg);
+  background: rgba(15, 17, 19, 0.05);
 }
 
 .cartItemInfo {
@@ -242,6 +272,91 @@
   color: #c0392b;
   background: rgba(192, 57, 43, 0.06);
   border-color: rgba(192, 57, 43, 0.15);
+}
+
+/* ── Bloc Total commande (haut de la colonne formulaire) ── */
+
+.orderTotal {
+  display: grid;
+  gap: 11px;
+  padding: 18px 20px;
+  border: 1px solid rgba(15, 17, 19, 0.1);
+  border-radius: 18px;
+  background: var(--color-bg);
+}
+
+.orderTotalLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+.orderTotalRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.orderTotalName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+/* Investissement B2B : gros, noir */
+.orderTotalValueLg {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* CA Potentiel : moyen */
+.orderTotalValueMd {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Bénéfice net projeté : vert, mis en avant */
+.orderProfitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 1px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+}
+
+.orderProfitName {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(167, 243, 208, 0.85);
+}
+
+.orderProfitValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #a7f3d0;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ── Formulaire ── */
@@ -671,9 +786,38 @@
     display: none;
   }
 
-  /* Masquer le formulaire de contact entièrement */
+  /* Garder le bloc Total commande, masquer le reste du formulaire */
   .formSection {
+    position: static;
+    border: none;
+    padding: 0;
+    background: none;
+    break-inside: avoid;
+  }
+
+  .formHeader,
+  .fieldGroup,
+  .error,
+  .submitBtn,
+  .pdfBtn {
     display: none;
+  }
+
+  /* Total commande imprimable (pas de fond foncé) */
+  .orderTotal {
+    border: 1px solid #d0d0d0;
+    margin-top: 16px;
+    break-inside: avoid;
+  }
+
+  .orderProfitRow {
+    background: none;
+    border: 1px solid #d0d0d0;
+  }
+
+  .orderProfitName,
+  .orderProfitValue {
+    color: #000;
   }
 
   /* Prix et quantités en tabular-nums (déjà défini, renforcé) */
@@ -683,28 +827,17 @@
   }
 }
 
-/* Tablette : 2 colonnes (cart+marge à gauche, form à droite) */
-@media (max-width: 1200px) {
+/* Tablette étroite : ajuster le ratio si l'espace se réduit */
+@media (max-width: 1100px) {
   .layout {
-    grid-template-columns: 1fr 360px;
-    grid-template-areas:
-      "cart  form"
-      "marge form";
+    grid-template-columns: 3fr 2fr;
   }
-
-  .cartSection  { grid-area: cart; }
-  .marginSection { grid-area: marge; position: static; }
-  .formSection  { grid-area: form; }
 }
 
 /* Mobile : 1 colonne */
 @media (max-width: 760px) {
   .layout {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "cart"
-      "marge"
-      "form";
   }
 
   .formSection {
@@ -721,6 +854,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  .cartItemSubtotal {
+    justify-items: start;
+    text-align: left;
   }
 
   .cartItemActions {

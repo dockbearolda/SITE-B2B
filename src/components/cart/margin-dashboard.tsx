@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
+import { RollingNumber } from "@/components/ui/rolling-number";
 import styles from "./margin-dashboard.module.css";
 
 function fmt(n: number): string {
@@ -36,10 +37,17 @@ export function MarginDashboard({ vertical = false }: { vertical?: boolean }) {
         {!isOpen && (
           <span className={styles.summary}>
             <span className={styles.summaryValue}>
-              {heroSign}{fmt(margeNette)}
+              <RollingNumber
+                value={margeNette}
+                format={(n) => (n >= 0 ? "+" : "") + fmt(n)}
+              />
             </span>
             <span className={styles.summaryBadge}>
-              coeff {coeffSign}{coeffMarge.toFixed(3)}
+              coeff{" "}
+              <RollingNumber
+                value={coeffMarge}
+                format={(n) => (n >= 0 ? "+" : "") + n.toFixed(3)}
+              />
             </span>
           </span>
         )}
@@ -66,7 +74,9 @@ export function MarginDashboard({ vertical = false }: { vertical?: boolean }) {
         <div className={`${styles.metrics} ${vertical ? styles.metricsVertical : ""}`}>
           {/* Investissement B2B */}
           <div className={styles.metric}>
-            <span className={styles.metricValue}>{fmt(totalB2B)}</span>
+            <span className={styles.metricValue}>
+              <RollingNumber value={totalB2B} format={fmt} />
+            </span>
             <span className={styles.metricName}>Investissement B2B</span>
             <span className={styles.metricSub}>coût total de votre commande</span>
           </div>
@@ -80,7 +90,9 @@ export function MarginDashboard({ vertical = false }: { vertical?: boolean }) {
 
           {/* CA Potentiel */}
           <div className={styles.metric}>
-            <span className={styles.metricValue}>{fmt(totalRevente)}</span>
+            <span className={styles.metricValue}>
+              <RollingNumber value={totalRevente} format={fmt} />
+            </span>
             <span className={styles.metricName}>CA Potentiel</span>
             <span className={styles.metricSub}>chiffre d&apos;affaires à la revente</span>
           </div>
@@ -95,11 +107,18 @@ export function MarginDashboard({ vertical = false }: { vertical?: boolean }) {
           {/* Marge Nette — carte héro */}
           <div className={`${styles.metric} ${styles.metricHero}`}>
             <span className={styles.heroValue}>
-              {heroSign}{fmt(margeNette)}
+              <RollingNumber
+                value={margeNette}
+                format={(n) => (n >= 0 ? "+" : "") + fmt(n)}
+              />
             </span>
             <span className={styles.heroName}>Bénéfice net projeté</span>
             <span className={styles.heroBadge}>
-              coeff {coeffSign}{coeffMarge.toFixed(3)}
+              coeff{" "}
+              <RollingNumber
+                value={coeffMarge}
+                format={(n) => (n >= 0 ? "+" : "") + n.toFixed(3)}
+              />
             </span>
           </div>
         </div>
