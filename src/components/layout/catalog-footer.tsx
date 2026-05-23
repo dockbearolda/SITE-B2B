@@ -52,11 +52,11 @@ export function CatalogFooter() {
           <dl className={styles.dataList}>
             <div className={styles.dataRow}>
               <dt className={styles.dataLabel}>IBAN</dt>
-              <dd className={styles.dataValue}>[À REMPLIR]</dd>
+              <dd className={styles.dataValue}>FR76 1027 8053 6000 0217 1400 271</dd>
             </div>
             <div className={styles.dataRow}>
               <dt className={styles.dataLabel}>BIC</dt>
-              <dd className={styles.dataValue}>[À REMPLIR]</dd>
+              <dd className={styles.dataValue}>CMCIFR2A</dd>
             </div>
           </dl>
         </div>
@@ -82,7 +82,7 @@ export function CatalogFooter() {
           <dl className={styles.dataList}>
             <div className={styles.dataRow}>
               <dt className={styles.dataLabel}>SIRET</dt>
-              <dd className={styles.dataValue}>[À COMPLÉTER]</dd>
+              <dd className={styles.dataValue}>978 296 952 00028</dd>
             </div>
             <div className={styles.dataRow}>
               <dt className={styles.dataLabel}>Contact</dt>
