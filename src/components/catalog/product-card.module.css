@@ -1,0 +1,274 @@
+/* ── Carte produit ──────────────────────────────────────────────── */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid #EAEAEA;
+  border-radius: 20px;
+  background: #FFFFFF;
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  will-change: transform;
+  /* La hauteur est égalisée par le CSS Grid (align-items: stretch) */
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: #D4D4D4;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Zone 1 — Image (hauteur fixe 260px) ───────────────────────── */
+
+.imageWrap {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.image {
+  object-fit: contain;
+  transition: transform 700ms ease-in-out;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+/* ── Loupe (centre au survol) ───────────────────────────────────── */
+
+.quickViewBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--color-text);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 200ms ease, transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+}
+
+.imageWrap:hover .quickViewBtn {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ── Contenu textuel ────────────────────────────────────────────── */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+/* Zone 2 — En-tête : ref + contenance */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ref {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.volumeTag {
+  font-family: ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  padding: 2px 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.02);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Zone 3 — Titre produit (2 lignes max, hauteur réservée) */
+.title {
+  font-size: 1.12rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  margin: 0;
+  min-height: 56px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Zone 4 — Bloc Achat → Revente */
+.pricingBlock {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  padding: 10px 12px;
+  background: var(--color-surface-strong, #f5f5f7);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.colAchat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.colArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  opacity: 0.6;
+  line-height: 1;
+}
+
+.colRevente {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.colLabel {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--color-muted);
+  opacity: 0.7;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.colVal {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text, #1d1d1f);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.colValRevente {
+  color: var(--color-text);
+}
+
+/* Zones 5-7 — poussées en bas de la carte via margin-top: auto */
+.cartSection {
+  margin-top: auto;
+}
+
+/* ── Responsive mobile : carte en ligne style iOS ───────────────── */
+
+@media (max-width: 979px) {
+  .card {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 16px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #E5E5EA;
+    box-shadow: none;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .card:last-child {
+    border-bottom: none;
+  }
+
+  .card:hover {
+    transform: none !important;
+    box-shadow: none;
+    border-color: #E5E5EA;
+  }
+
+  .imageWrap {
+    width: 60px;
+    height: 60px !important;
+    min-width: 60px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #F2F2F7;
+  }
+
+  .content {
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+    padding-top: 0;
+  }
+
+  .title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: unset;
+    display: block;
+    -webkit-line-clamp: unset;
+  }
+
+  .ref {
+    font-size: 0.72rem;
+    color: #8E8E93;
+  }
+
+  .quickViewBtn {
+    display: none;
+  }
+
+  .pricingBlock {
+    padding: 5px 9px;
+    border-radius: 8px;
+    column-gap: 4px;
+  }
+
+  .colLabel {
+    font-size: 0.52rem;
+  }
+
+  .colVal {
+    font-size: 0.82rem;
+  }
+
+  .cartSection {
+    margin-top: 0;
+  }
+}

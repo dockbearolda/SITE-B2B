@@ -1,16 +1,25 @@
-/* ── Bloc avant ajout ── */
-.addBlock {
+/* ── Bloc unique zones 5-6-7 ── */
+.block {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* ── Badge MOQ minimum ── */
+/* ── Zone 5 — Méta : pastille MOQ + marge unitaire ── */
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 48px;
+}
+
+/* Pastille MOQ — visibility:hidden par défaut, espace toujours réservé */
 .moqBadge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  align-self: flex-start;
   padding: 3px 8px;
   border-radius: 20px;
   background: rgba(15, 17, 19, 0.06);
@@ -19,52 +28,102 @@
   color: var(--color-muted);
   letter-spacing: 0.01em;
   user-select: none;
+  flex-shrink: 0;
+  visibility: hidden; /* réserve l'espace sans afficher */
 }
 
-.gainSummary {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
+.moqBadgeVisible {
+  visibility: visible;
+}
+
+.margeUnitaire {
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-muted);
   white-space: nowrap;
-  flex: 1;        /* prend l'espace restant dans controlRow */
-  min-width: 0;   /* évite l'overflow hors du flex container */
+  text-align: right;
 }
 
-.gainAmount {
+.margeAmount {
   color: #27ae60;
   font-weight: 800;
 }
+
+/* ── Zone 6 — Stepper + marge estimée ── */
 
 .controlRow {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap; /* évite l'overflow sur carte étroite */
 }
 
-@media (max-width: 640px) {
-  .controlRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-}
-
-/* ── Stepper quantité (avant ajout) ── */
-.pendingRow {
+.stepper {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 128px; /* largeur fixe — les 3 boutons −/valeur/+ */
+  flex: 0 0 128px;
   border: 1px solid rgba(15, 17, 19, 0.14);
   border-radius: 12px;
   overflow: hidden;
 }
 
-/* ── Bouton Ajouter ── */
+.gainSummary {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gainAmount {
+  color: #27ae60;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ── Boutons +/− ── */
+
+.qtyBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 40px;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text);
+  transition: background 120ms ease;
+}
+
+.qtyBtn:hover {
+  background: rgba(15, 17, 19, 0.06);
+}
+
+.qtyBtn:active {
+  background: rgba(15, 17, 19, 0.1);
+}
+
+.qtyValue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
+/* ── Zone 7 — Bouton Ajouter au panier ── */
+
 .button {
   display: flex;
   align-items: center;
@@ -101,7 +160,7 @@
   cursor: default;
 }
 
-/* ── État "Chargement" (noir + spinner, 300ms) ── */
+/* ── État "Chargement" (300ms) ── */
 .buttonLoading {
   background: var(--color-dark);
   cursor: wait;
@@ -122,7 +181,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* ── État "Ajouté" (vert émeraude mat, 1.5s) ── */
+/* ── État "Ajouté" (1.5s) ── */
 .buttonAdded {
   background: #059669;
   animation: popIn 0.25s ease;
@@ -137,90 +196,6 @@
   stroke-dashoffset: 20;
 }
 
-/* ── Bloc "dans le panier" : stepper + raccourcis ── */
-.cartBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
-
-/* ── Raccourcis quantité (+5, +10, +25) ── */
-.quickAdd {
-  display: flex;
-  gap: 5px;
-}
-
-.quickAddBtn {
-  flex: 1;
-  padding: 5px 0;
-  border: 1px solid rgba(15, 17, 19, 0.12);
-  border-radius: 8px;
-  background: transparent;
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--color-muted);
-  cursor: pointer;
-  letter-spacing: 0.01em;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
-}
-
-.quickAddBtn:hover {
-  background: var(--color-dark);
-  color: #fff;
-  border-color: transparent;
-}
-
-.quickAddBtn:active {
-  transform: scale(0.96);
-}
-
-/* ── Contrôles quantité (dans le panier) ── */
-.quantityRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  width: 100%;
-  border: 1px solid rgba(15, 17, 19, 0.14);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* ── Bouton +/− partagé ── */
-.qtyBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 40px;
-  border: none;
-  background: transparent;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--color-text);
-  transition: background 120ms ease;
-}
-
-.qtyBtn:hover {
-  background: rgba(15, 17, 19, 0.06);
-}
-
-.qtyBtn:active {
-  background: rgba(15, 17, 19, 0.1);
-}
-
-.qtyValue {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
-  font-size: 0.94rem;
-  font-weight: 800;
-}
-
 /* ── Animations ── */
 @keyframes popIn {
   0%   { transform: scale(0.96); }
@@ -230,4 +205,33 @@
 
 @keyframes drawCheck {
   to { stroke-dashoffset: 0; }
+}
+
+/* ── Mobile : zones compactes ── */
+@media (max-width: 979px) {
+  .meta {
+    min-height: unset;
+    gap: 4px;
+  }
+
+  .moqBadge {
+    font-size: 0.64rem;
+    padding: 2px 6px;
+  }
+
+  .margeUnitaire {
+    font-size: 0.68rem;
+  }
+
+  .controlRow {
+    gap: 6px;
+  }
+
+  .stepper {
+    flex: 0 0 100px;
+  }
+
+  .gainSummary {
+    font-size: 0.68rem;
+  }
 }

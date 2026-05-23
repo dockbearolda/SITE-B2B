@@ -614,284 +614,16 @@
 
 .itemGrid {
   display: grid;
-  /* auto-fill : le nombre de colonnes s'adapte à la largeur RÉELLE de la
-     colonne centrale (et non du viewport). minmax(min(100%, 300px), 1fr)
-     garantit que chaque carte fait au moins sa largeur naturelle (~292px),
-     donc la grille ne déborde jamais sous le panier de droite. */
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: 20px;
-  align-items: start; /* chaque carte prend sa hauteur naturelle — évite
-                         l'espace vide sous les cartes "en panier" plus courtes */
-}
-
-/* ── Card ───────────────────────────────────────────────────── */
-
-.itemCard {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 16px;
-  border: 1px solid #EAEAEA;
-  border-radius: 20px;
-  background: #FFFFFF;
-  transition:
-    transform var(--transition-base),
-    border-color var(--transition-base),
-    box-shadow var(--transition-base);
-  will-change: transform;
-}
-
-.itemCard:hover {
-  transform: translateY(-3px);
-  border-color: #D4D4D4;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
-}
-
-/* ── Image area ─────────────────────────────────────────────── */
-
-.imageWrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #FFFFFF;
-}
-
-.image {
-  object-fit: contain;
-  transition: transform 700ms ease-in-out;
-}
-
-.itemCard:hover .image {
-  transform: scale(1.05);
-}
-
-/* ── Quick view button ──────────────────────────────────────── */
-
-.quickViewBtn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.82);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: var(--color-text);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 200ms ease, transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
-}
-
-.imageWrap:hover .quickViewBtn {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-/* ── Card color swatches ────────────────────────────────────── */
-
-.cardSwatches {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0 2px;
-}
-
-.cardSwatch {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--cs-color);
-  border: 1.5px solid rgba(0, 0, 0, 0.1);
-  flex-shrink: 0;
-}
-
-.cardSwatchMore {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--color-muted);
-  letter-spacing: 0.02em;
-}
-
-/* ── Card content ───────────────────────────────────────────── */
-
-.itemContent {
-  display: flex;
-  flex-direction: column;
-  flex: 1;           /* occupe toute la hauteur restante après l'image */
-  min-height: 0;
-  gap: 10px;
-}
-
-/* Zone bouton — suit naturellement le contenu (pas de gap artificiel) */
-.itemActions {
-}
-
-.itemMeta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.itemRef {
-  color: var(--color-muted);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* 350ml institutional tag */
-.volumeTag {
-  font-family: ui-monospace, "SFMono-Regular", "Menlo", monospace;
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-  padding: 2px 6px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.02);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.itemName {
-  font-size: 1.12rem;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.03em;
-}
-
-.metaTags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.metaTag {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 9px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border-strong);
-  border-radius: 100px;
-  color: var(--color-muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.01em;
-  line-height: 1.4;
-}
-
-/* ── Pricing block ──────────────────────────────────────────── */
-
-.pricingBlock {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  grid-template-rows: auto;
-  align-items: center;
-  column-gap: 8px;
-  row-gap: 8px;
-  padding: 10px 12px;
-  background: var(--color-surface-strong, #f5f5f7);
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-/* Colonne gauche : Achat */
-.colAchat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  align-items: flex-start;
-}
-
-/* Flèche centrale */
-.colArrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: var(--color-muted);
-  opacity: 0.6;
-  line-height: 1;
-}
-
-/* Colonne droite : Revente */
-.colRevente {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  align-items: flex-end;
-}
-
-/* Label "Achat" / "Revente" */
-.colLabel {
-  font-size: 0.58rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--color-muted);
-  opacity: 0.7;
-  line-height: 1;
-  margin-bottom: 2px;
-}
-
-/* Valeur prix */
-.colVal {
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--color-text, #1d1d1f);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-
-/* Prix revente — légèrement plus sombre */
-.colValRevente {
-  color: var(--color-text);
-}
-
-/* Ligne badge marge — s'étend sur les 3 colonnes */
-.marginRow {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: center;
-  padding-top: 2px;
-  border-top: 1px dashed rgba(0, 0, 0, 0.08);
-}
-
-/* Badge marge verte */
-.marginBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 9px;
-  border-radius: 100px;
-  background: rgba(39, 174, 96, 0.10);
-  border: 1px solid rgba(39, 174, 96, 0.18);
-  color: #27ae60;
-  font-size: 0.71rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  letter-spacing: 0.01em;
+  /* 3 colonnes fixes sur desktop — les cartes sont égalisées par align-items: stretch.
+     Le bouton "Ajouter au panier" s'aligne grâce à margin-top: auto dans product-card. */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: stretch;
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */
 
 @media (max-width: 1080px) {
-  /* .itemGrid : géré par auto-fill (voir règle de base) — aucun override ici. */
   .listHeader,
   .listRow {
     grid-template-columns: 48px 80px 1fr 120px auto;
@@ -899,9 +631,7 @@
 }
 
 @media (max-width: 640px) {
-  .itemGrid {
-    grid-template-columns: 1fr;
-  }
+  /* .itemGrid passe déjà en flex-column via le breakpoint 979px */
 
   .filterBar {
     gap: 10px;
@@ -961,102 +691,16 @@
 /* ── iOS-style list view (mobile) ───────────────────────────── */
 
 @media (max-width: 979px) {
-  /* ── Fallback CSS : force le grid en liste avant hydratation React ── */
-  /* Dès que useEffect fire, React switch sur .listView et ces styles    */
-  /* n'ont plus d'effet. Aucun impact sur le desktop.                    */
+  /* ── Fallback CSS : force le grid en colonne avant hydratation React ── */
+  /* Les styles de carte (flex-row, image 60px, etc.) sont dans            */
+  /* product-card.module.css pour garder la carte auto-suffisante.         */
   .itemGrid {
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* annule align-items:start du desktop */
+    align-items: stretch;
     gap: 0;
   }
 
-  .itemCard {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-    padding: 11px 16px;
-    border-radius: 0;
-    border: none;
-    border-bottom: 1px solid #E5E5EA;
-    background: #fff;
-    box-shadow: none;
-    transform: none !important;
-    will-change: auto;
-  }
-
-  .itemCard:last-child {
-    border-bottom: none;
-  }
-
-  .itemCard:hover {
-    transform: none;
-    box-shadow: none;
-    border-color: #E5E5EA;
-  }
-
-  .imageWrap {
-    width: 60px;
-    height: 60px;
-    min-width: 60px;
-    flex-shrink: 0;
-    border-radius: 10px;
-    background: #F2F2F7;
-    aspect-ratio: unset;
-  }
-
-  .itemContent {
-    flex: 1;
-    min-width: 0;
-    gap: 4px;
-  }
-
-  .itemName {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #111;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .itemRef {
-    font-size: 0.72rem;
-    color: #8E8E93;
-  }
-
-  /* Masquer les éléments non pertinents en vue liste compacte */
-  .metaTags,
-  .cardSwatches,
-  .quickViewBtn {
-    display: none;
-  }
-
-  /* Pricing compact en vue liste mobile */
-  .pricingBlock {
-    padding: 5px 9px;
-    border-radius: 8px;
-    gap: 2px 4px;
-  }
-
-  .colLabel {
-    font-size: 0.52rem;
-  }
-
-  .colVal {
-    font-size: 0.82rem;
-  }
-
-  .marginBadge {
-    font-size: 0.62rem;
-    padding: 1px 7px;
-  }
-
-  /* Le bouton add-to-cart reste mais compact */
-  .itemMeta {
-    margin-bottom: 0;
-  }
   /* Conteneur sans carte — fond neutre */
   .listView {
     border: none;

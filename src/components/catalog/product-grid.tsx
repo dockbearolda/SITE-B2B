@@ -8,12 +8,11 @@ import { PremiumPlaceholder } from "@/components/ui/premium-placeholder";
 import type { CatalogProduct } from "@/data/catalog";
 import { getProductImagePath } from "@/lib/product-image";
 
-import { ProductBadge, getProductBadge } from "./product-badge";
-import { ProductImage } from "./product-image";
+import { ProductCard } from "./product-card";
 import { QuickViewModal } from "./quick-view-modal";
 import styles from "./product-grid.module.css";
 
-// ── Color extraction ────────────────────────────────────────────
+// ── Color extraction (pour filtres et swatches) ─────────────────
 const COLOR_MAP: Record<string, string> = {
   rouge: "#d94f4f",
   orange: "#e07c2e",
@@ -55,16 +54,6 @@ function buildSeriesSwatches(
   return map;
 }
 
-const GLOW_SKIP = new Set(["noir", "blanc"]);
-
-function getGlowColor(label: string): string | null {
-  const lower = label.toLowerCase();
-  for (const [name, hex] of Object.entries(COLOR_MAP)) {
-    if (!GLOW_SKIP.has(name) && lower.includes(name)) return hex;
-  }
-  return null;
-}
-
 function extractColors(products: readonly CatalogProduct[]): string[] {
   const found = new Set<string>();
   products.forEach((p) => {
@@ -85,7 +74,7 @@ function extractNotes(products: readonly CatalogProduct[]): string[] {
   return Array.from(found);
 }
 
-// ── Price parsing & formatting ───────────────────────────────────
+// ── Price helpers (pour la vue liste) ───────────────────────────
 function parsePrice(price: string | undefined): number | undefined {
   if (!price) return undefined;
   const n = parseFloat(price.replace(",", ".").replace(/[^\d.]/g, ""));
@@ -93,132 +82,22 @@ function parsePrice(price: string | undefined): number | undefined {
 }
 
 function formatPrice(val: number): string {
-  return val.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "\u00a0€";
-}
-
-
-// ── Pricing block component ──────────────────────────────────────
-function PricingBlock({ achat, revente }: { achat?: number; revente?: number }) {
-  if (!achat && !revente) return null;
-
-  // Cas dégradé : un seul prix disponible
-  if (!achat || !revente) {
-    return (
-      <div className={styles.pricingBlock}>
-        <span className={styles.colLabel}>{achat ? "Achat" : "Revente"}</span>
-        <span className={styles.colVal}>{formatPrice((achat ?? revente)!)}</span>
-      </div>
-    );
-  }
-
-  const marge = revente - achat;
-
   return (
-    <div className={styles.pricingBlock}>
-      {/* Colonne gauche : Achat */}
-      <div className={styles.colAchat}>
-        <span className={styles.colLabel}>Achat</span>
-        <span className={styles.colVal}>{formatPrice(achat)}</span>
-      </div>
-
-      {/* Flèche centrale */}
-      <span className={styles.colArrow} aria-hidden="true">→</span>
-
-      {/* Colonne droite : Revente */}
-      <div className={styles.colRevente}>
-        <span className={styles.colLabel}>Revente</span>
-        <span className={`${styles.colVal} ${styles.colValRevente}`}>{formatPrice(revente)}</span>
-      </div>
-
-      {/* Badge marge — seulement si revente > achat */}
-      {marge > 0 && (
-        <div className={styles.marginRow}>
-          <span className={styles.marginBadge}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-              <polyline points="17 6 23 6 23 12" />
-            </svg>
-            +{formatPrice(marge)}&nbsp;de marge
-          </span>
-        </div>
-      )}
-    </div>
+    val.toLocaleString("fr-FR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }) + " €"
   );
 }
 
-
-// ── ProductCard (memo) ──────────────────────────────────────────
-type CardProps = {
+// ── ProductListRow ──────────────────────────────────────────────
+type ListRowProps = {
   item: CatalogProduct;
   siblingColors: string[];
   onQuickView: (product: CatalogProduct) => void;
 };
 
-const ProductCard = memo(function ProductCard({ item, siblingColors, onQuickView }: CardProps) {
-  const src = getProductImagePath(item.ref);
-  const badge = getProductBadge(item.ref);
-  const glowColor = getGlowColor(item.label);
-  const is350ml = item.note2 === "350 ml";
-
-  return (
-    <article className={styles.itemCard}>
-      <div
-        className={styles.imageWrap}
-        style={glowColor ? {
-          background: `radial-gradient(ellipse at 50% 58%, ${glowColor}14 0%, ${glowColor}00 68%), #FFFFFF`,
-        } : { background: "#FFFFFF" }}
-      >
-        {src ? (
-          <ProductImage src={src} alt={item.label} className={styles.image} />
-        ) : (
-          <PremiumPlaceholder />
-        )}
-
-        {badge && <ProductBadge type={badge} />}
-
-        <button
-          className={styles.quickViewBtn}
-          onClick={() => onQuickView(item)}
-          aria-label={`Aperçu de ${item.label}`}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            <line x1="11" y1="8" x2="11" y2="14" />
-            <line x1="8" y1="11" x2="14" y2="11" />
-          </svg>
-        </button>
-      </div>
-
-      <div className={styles.itemContent}>
-        <div className={styles.itemMeta}>
-          <span className={styles.itemRef}>{item.ref}</span>
-          {is350ml && <span className={styles.volumeTag}>350 ml</span>}
-        </div>
-        <h2 className={styles.itemName}>{item.label}</h2>
-
-        <PricingBlock
-          achat={parsePrice(item.resellerPrice)}
-          revente={parsePrice(item.retailPrice)}
-        />
-
-        <div className={styles.itemActions}>
-          <AddToCartButton
-            productRef={item.ref}
-            productLabel={item.label}
-            productPrixAchat={parsePrice(item.resellerPrice)}
-            productPrixRevente={parsePrice(item.retailPrice)}
-            moq={item.moq ?? 1}
-            step={item.step}
-          />
-        </div>
-      </div>
-    </article>
-  );
-});
-
-// ── ProductListRow ──────────────────────────────────────────────
-const ProductListRow = memo(function ProductListRow({ item, onQuickView }: CardProps) {
+const ProductListRow = memo(function ProductListRow({ item, onQuickView }: ListRowProps) {
   const src = getProductImagePath(item.ref);
   const achat = parsePrice(item.resellerPrice);
   const revente = parsePrice(item.retailPrice);
@@ -251,7 +130,7 @@ const ProductListRow = memo(function ProductListRow({ item, onQuickView }: CardP
           <div className={styles.listPriceGroup}>
             {achat && <span className={styles.listPriceMain}>{formatPrice(achat)}</span>}
             {revente && achat && (
-              <span className={styles.listPricePvc}>→&nbsp;{formatPrice(revente)} boutique</span>
+              <span className={styles.listPricePvc}>&rarr;&nbsp;{formatPrice(revente)} boutique</span>
             )}
           </div>
         </div>
@@ -427,7 +306,7 @@ export function ProductGrid({ products, viewMode = "grid", onViewModeChange, tit
               onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
               aria-label="Effacer la recherche"
             >
-              ×
+              &times;
             </button>
           )}
         </div>
@@ -437,7 +316,7 @@ export function ProductGrid({ products, viewMode = "grid", onViewModeChange, tit
           <div className={styles.filterBar}>
             {availableColors.length > 0 && (
               <div className={styles.filterGroup}>
-                <span className={styles.filterGroupLabel}>Couleur <span aria-hidden="true">·</span></span>
+                <span className={styles.filterGroupLabel}>Couleur <span aria-hidden="true">&middot;</span></span>
                 <div className={styles.swatches}>
                   {availableColors.map((color) => {
                     const name = color.charAt(0).toUpperCase() + color.slice(1);
@@ -460,7 +339,7 @@ export function ProductGrid({ products, viewMode = "grid", onViewModeChange, tit
 
             {availableNotes.length > 0 && (
               <div className={styles.filterGroup}>
-                <span className={styles.filterGroupLabel}>Contenance <span aria-hidden="true">·</span></span>
+                <span className={styles.filterGroupLabel}>Contenance <span aria-hidden="true">&middot;</span></span>
                 <div className={styles.pills}>
                   {availableNotes.map((note) => (
                     <button
@@ -490,7 +369,7 @@ export function ProductGrid({ products, viewMode = "grid", onViewModeChange, tit
                   aria-expanded={showStockInfo}
                   aria-label="En savoir plus sur la logique stock"
                 >
-                  <span aria-hidden="true">ⓘ</span> En savoir plus
+                  <span aria-hidden="true">&#9432;</span> En savoir plus
                 </button>
                 {showStockInfo && (
                   <>
@@ -504,7 +383,7 @@ export function ProductGrid({ products, viewMode = "grid", onViewModeChange, tit
                         onClick={() => setShowStockInfo(false)}
                         aria-label="Fermer"
                       >
-                        ×
+                        &times;
                       </button>
                       <p className={styles.stockInfoTitle}>Stock &amp; disponibilité</p>
                       <ul className={styles.stockInfoList}>
