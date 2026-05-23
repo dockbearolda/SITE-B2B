@@ -279,6 +279,7 @@ export function ProductGrid({ products, viewMode = "grid", onViewModeChange, tit
   const [activeColors, setActiveColors] = useState<Set<string>>(new Set());
   const [activeNotes, setActiveNotes] = useState<Set<string>>(new Set());
   const [quickViewProduct, setQuickViewProduct] = useState<CatalogProduct | null>(null);
+  const [showStockInfo, setShowStockInfo] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const handleCloseModal = useCallback(() => setQuickViewProduct(null), []);
@@ -407,41 +408,88 @@ export function ProductGrid({ products, viewMode = "grid", onViewModeChange, tit
         {hasFilters && (
           <div className={styles.filterBar}>
             {availableColors.length > 0 && (
-              <div className={styles.swatches}>
-                {availableColors.map((color) => (
-                  <button
-                    key={color}
-                    className={`${styles.swatch} ${activeColors.has(color) ? styles.swatchActive : ""}`}
-                    style={{ "--swatch-color": COLOR_MAP[color] } as React.CSSProperties}
-                    onClick={() => toggleColor(color)}
-                    aria-label={color.charAt(0).toUpperCase() + color.slice(1)}
-                    aria-pressed={activeColors.has(color)}
-                    title={color.charAt(0).toUpperCase() + color.slice(1)}
-                  />
-                ))}
+              <div className={styles.filterGroup}>
+                <span className={styles.filterGroupLabel}>Couleur <span aria-hidden="true">·</span></span>
+                <div className={styles.swatches}>
+                  {availableColors.map((color) => {
+                    const name = color.charAt(0).toUpperCase() + color.slice(1);
+                    return (
+                      <div key={color} className={styles.swatchWrapper}>
+                        <button
+                          className={`${styles.swatch} ${activeColors.has(color) ? styles.swatchActive : ""}`}
+                          style={{ "--swatch-color": COLOR_MAP[color] } as React.CSSProperties}
+                          onClick={() => toggleColor(color)}
+                          aria-label={name}
+                          aria-pressed={activeColors.has(color)}
+                        />
+                        <span className={styles.swatchTooltip} aria-hidden="true">{name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
             {availableNotes.length > 0 && (
-              <div className={styles.pills}>
-                {availableNotes.map((note) => (
-                  <button
-                    key={note}
-                    className={`${styles.pill} ${activeNotes.has(note) ? styles.pillActive : ""}`}
-                    onClick={() => toggleNote(note)}
-                    aria-pressed={activeNotes.has(note)}
-                  >
-                    {note}
-                  </button>
-                ))}
+              <div className={styles.filterGroup}>
+                <span className={styles.filterGroupLabel}>Contenance <span aria-hidden="true">·</span></span>
+                <div className={styles.pills}>
+                  {availableNotes.map((note) => (
+                    <button
+                      key={note}
+                      className={`${styles.pill} ${activeNotes.has(note) ? styles.pillActive : ""}`}
+                      onClick={() => toggleNote(note)}
+                      aria-pressed={activeNotes.has(note)}
+                    >
+                      {note}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
-            {activeCount > 0 && (
-              <button className={styles.clearBtn} onClick={clearAll}>
-                Effacer ({activeCount})
-              </button>
-            )}
+            <div className={styles.filterActions}>
+              {activeCount > 0 && (
+                <button className={styles.clearBtn} onClick={clearAll}>
+                  Effacer ({activeCount})
+                </button>
+              )}
+
+              <div className={styles.stockInfoWrapper}>
+                <button
+                  className={styles.stockInfoBtn}
+                  onClick={() => setShowStockInfo((v) => !v)}
+                  aria-expanded={showStockInfo}
+                  aria-label="En savoir plus sur la logique stock"
+                >
+                  <span aria-hidden="true">ⓘ</span> En savoir plus
+                </button>
+                {showStockInfo && (
+                  <>
+                    <div
+                      className={styles.stockInfoOverlay}
+                      onClick={() => setShowStockInfo(false)}
+                    />
+                    <div className={styles.stockInfoPopover} role="dialog" aria-label="Logique stock et disponibilité">
+                      <button
+                        className={styles.stockInfoClose}
+                        onClick={() => setShowStockInfo(false)}
+                        aria-label="Fermer"
+                      >
+                        ×
+                      </button>
+                      <p className={styles.stockInfoTitle}>Stock &amp; disponibilité</p>
+                      <ul className={styles.stockInfoList}>
+                        <li>Les produits affichés sont <strong>disponibles à la commande</strong>.</li>
+                        <li>Les articles <em>« Choix de designs selon stock »</em> sont attribués selon les disponibilités au moment de l&rsquo;expédition.</li>
+                        <li>Le filtre <strong>Contenance</strong> sélectionne les produits par format (ex.&nbsp;350&nbsp;ml).</li>
+                        <li>Pour toute question sur les disponibilités, écrivez-nous à <a href="mailto:atelierolda@gmail.com" className={styles.stockInfoLink}>atelierolda@gmail.com</a>.</li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
