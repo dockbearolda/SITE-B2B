@@ -59,6 +59,7 @@ export async function POST(req: Request) {
     resume?: string;
     accent?: string;
     surface?: string;
+    signauxBusiness?: string[];
     // Catégorie
     familleId?: number;
     // Produit
@@ -87,6 +88,9 @@ export async function POST(req: Request) {
         resume: body.resume?.trim() ?? "",
         accent: body.accent ?? "#dbe7ff",
         surface: body.surface ?? "rgba(219, 231, 255, 0.68)",
+        signauxBusiness: Array.isArray(body.signauxBusiness)
+          ? body.signauxBusiness.map((s) => String(s).trim()).filter(Boolean)
+          : [],
         ordre: (maxOrdre._max.ordre ?? 0) + 1,
       },
     });
@@ -151,6 +155,7 @@ export async function PUT(req: Request) {
     resume?: string;
     accent?: string;
     surface?: string;
+    signauxBusiness?: string[];
     ordre?: number;
     reference?: string;
     designation?: string;
@@ -176,6 +181,9 @@ export async function PUT(req: Request) {
         ...(body.resume !== undefined ? { resume: body.resume.trim() } : {}),
         ...(body.accent !== undefined ? { accent: body.accent } : {}),
         ...(body.surface !== undefined ? { surface: body.surface } : {}),
+        ...(Array.isArray(body.signauxBusiness)
+          ? { signauxBusiness: body.signauxBusiness.map((s) => String(s).trim()).filter(Boolean) }
+          : {}),
         ...(body.ordre !== undefined ? { ordre: body.ordre } : {}),
       },
     });

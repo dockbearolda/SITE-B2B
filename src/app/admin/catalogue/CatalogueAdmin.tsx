@@ -34,6 +34,7 @@ type Famille = {
   resume: string;
   accent: string;
   surface: string;
+  signauxBusiness: string[];
   categories: Categorie[];
 };
 
@@ -507,6 +508,31 @@ function ProduitModal({
   const set = (field: keyof EditingProduit, value: unknown) =>
     onChange({ ...produit, [field]: value });
 
+  const [uploading, setUploading] = useState(false);
+  const [uploadMsg, setUploadMsg] = useState("");
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setUploading(true);
+    setUploadMsg("");
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("folder", "produits");
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) {
+        set("imageUrl", data.path);
+        setUploadMsg("✓ Image envoyée — visible après redéploiement (~1 min)");
+      } else {
+        setUploadMsg(data.error ?? "Erreur");
+      }
+    } catch {
+      setUploadMsg("Erreur réseau");
+    }
+    setUploading(false);
+  };
+
   const allCategories = familles.flatMap((f) =>
     f.categories.map((c) => ({ ...c, familleNom: f.nom })),
   );
@@ -545,8 +571,15 @@ function ProduitModal({
               <input className={styles.input} type="number" min="0" value={produit.stock ?? ""} onChange={(e) => set("stock", e.target.value ? parseInt(e.target.value) : null)} />
             </label>
             <label className={styles.fieldLabel} style={{ gridColumn: "1/-1" }}>
-              URL image
-              <input className={styles.input} type="url" placeholder="https://..." value={produit.imageUrl ?? ""} onChange={(e) => set("imageUrl", e.target.value || null)} />
+              Image
+              <input className={styles.input} type="text" placeholder="/images/produits/… ou https://…" value={produit.imageUrl ?? ""} onChange={(e) => set("imageUrl", e.target.value || null)} />
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6, flexWrap: "wrap" }}>
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" disabled={uploading} onChange={handleUpload} />
+                {uploading && <span style={{ fontSize: 12, color: "#666" }}>Envoi…</span>}
+                {uploadMsg && (
+                  <span style={{ fontSize: 12, color: uploadMsg.startsWith("✓") ? "#059669" : "#d03a2e" }}>{uploadMsg}</span>
+                )}
+              </div>
             </label>
             <label className={styles.fieldLabel} style={{ gridColumn: "1/-1" }}>
               Note 1
@@ -637,6 +670,17 @@ function FamilleModal({
             <label className={styles.fieldLabel}>
               Couleur de surface
               <input className={styles.input} value={famille.surface ?? ""} onChange={(e) => set("surface", e.target.value)} placeholder="rgba(219, 231, 255, 0.68)" />
+            </label>
+            <label className={styles.fieldLabel} style={{ gridColumn: "1/-1" }}>
+              Signaux business (un argument par ligne)
+              <textarea
+                className={styles.input}
+                rows={3}
+                value={(famille.signauxBusiness ?? []).join("\n")}
+                onChange={(e) => set("signauxBusiness", e.target.value.split("\n"))}
+                placeholder="Un argument commercial par ligne…"
+                style={{ resize: "vertical" }}
+              />
             </label>
           </div>
         </div>

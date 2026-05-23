@@ -11,7 +11,7 @@ import { ProjectsDrawerProvider } from "@/lib/projects-drawer-context";
 
 import { ToastProvider } from "@/lib/toast-context";
 import { AuthSessionProvider } from "@/lib/session-provider";
-import { siteConfig } from "@/data/site";
+import { getSiteContent } from "@/lib/site-content";
 
 import "./globals.css";
 
@@ -29,23 +29,16 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export const metadata: Metadata = {
-  title: {
-    default: "Atelier OLDA",
-    template: "Atelier OLDA",
-  },
-  description: "",
-  applicationName: "Atelier OLDA",
-  openGraph: {
-    title: "Atelier OLDA",
-    description: "",
-    siteName: "Atelier OLDA",
-  },
-  twitter: {
-    title: "Atelier OLDA",
-    description: "",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const c = await getSiteContent();
+  return {
+    title: { default: c.metaTitle, template: c.metaTitle },
+    description: c.metaDescription,
+    applicationName: c.brandName,
+    openGraph: { title: c.metaTitle, description: c.metaDescription, siteName: c.brandName },
+    twitter: { title: c.metaTitle, description: c.metaDescription },
+  };
+}
 
 export default function RootLayout({
   children,

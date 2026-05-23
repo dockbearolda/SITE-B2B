@@ -1,30 +1,22 @@
 /**
- * Configuration Auth.js (next-auth v5)
+ * Configuration Auth.js (next-auth v5) — partie Node (accès base de données).
+ * La config Edge-safe (callbacks, pages) est dans src/auth.config.ts (middleware).
  *
- * Mode 1 — Strapi (si NEXT_PUBLIC_STRAPI_URL est défini)
- *   Auth via POST /api/auth/local + groupes tarifaires
+ * Ordre d'authentification dans authorize() :
+ *   1. Strapi          (si NEXT_PUBLIC_STRAPI_URL défini)
+ *   2. Base de données — table User (si DATABASE_URL défini, géré via /admin/clients)
+ *   3. LOCAL_USERS     (variable d'env — héritage / repli)
  *
- * Mode 2 — LOCAL_USERS (si Strapi n'est pas configuré)
- *   Utilisateurs définis dans la variable d'environnement LOCAL_USERS
- *   Format JSON : [{"id":"1","email":"...","password":"sha256:...","name":"...","groupe":"standard"}]
- *   Générer un hash : node scripts/add-user.mjs
- *
- * Variables d'environnement requises :
- *   AUTH_SECRET              — chaîne aléatoire secrète (openssl rand -base64 32)
- *
- * Variables optionnelles :
- *   NEXT_PUBLIC_STRAPI_URL   — URL Strapi (active le mode Strapi)
- *   STRAPI_API_TOKEN         — token API Strapi (server-only)
- *   LOCAL_USERS              — JSON array des utilisateurs locaux
- *   ADMIN_EMAILS             — emails admin séparés par virgule (ex: patron@olda.fr)
+ * Variables : AUTH_SECRET (requis), ADMIN_EMAILS, NEXT_PUBLIC_STRAPI_URL,
+ *   STRAPI_API_TOKEN, LOCAL_USERS, DATABASE_URL.
  */
 
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import authConfig from "@/auth.config";
+import { isDBConfigured, prisma } from "@/lib/prisma";
 
 const STRAPI_URL = (process.env.NEXT_PUBLIC_STRAPI_URL ?? "").replace(/\/$/, "");
-
-// ── Types Strapi ───────────────────────────────────────────────────
 
 type StrapiAuthResponse = {
   jwt?: string;
@@ -35,14 +27,8 @@ type StrapiMeResponse = {
   id: number;
   email: string;
   username: string;
-  groupe_client?: {
-    id: number;
-    slug: string;
-    nom: string;
-  } | null;
+  groupe_client?: { id: number; slug: string; nom: string } | null;
 };
-
-// ── Types utilisateurs locaux ──────────────────────────────────────
 
 export type LocalUser = {
   id: string;
@@ -64,11 +50,7 @@ function getLocalUsers(): LocalUser[] {
   }
 }
 
-/**
- * Vérifie un mot de passe contre le hash stocké.
- * Utilise Web Crypto API (compatible Edge Runtime et Node.js).
- * Supporte : "sha256:<hex>" ou texte brut (non recommandé en production).
- */
+/** Vérifie un mot de passe contre le hash stocké ("sha256:<hex>" ou texte brut). Web Crypto (Edge & Node). */
 async function checkPassword(input: string, stored: string): Promise<boolean> {
   if (stored.startsWith("sha256:")) {
     const data = new TextEncoder().encode(input);
@@ -78,13 +60,11 @@ async function checkPassword(input: string, stored: string): Promise<boolean> {
       .join("");
     return hashHex === stored.slice(7);
   }
-  // Comparaison directe (plaintext) — acceptable si l'env var n'est jamais exposé
   return input === stored;
 }
 
-// ── NextAuth configuration ─────────────────────────────────────────
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -97,7 +77,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = String(credentials.email).trim().toLowerCase();
         const password = String(credentials.password);
 
-        // ── Mode 1 : Authentification Strapi ─────────────────────
+        // ── 1. Strapi ────────────────────────────────────────────
         if (STRAPI_URL) {
           try {
             const authRes = await fetch(`${STRAPI_URL}/api/auth/local`, {
@@ -110,18 +90,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             });
 
             if (authRes.ok) {
-              const authData = await authRes.json() as StrapiAuthResponse;
+              const authData = (await authRes.json()) as StrapiAuthResponse;
               if (authData.jwt && authData.user) {
                 let groupeId: number | undefined;
                 let groupeSlug: string | undefined;
-
                 try {
                   const meRes = await fetch(
                     `${STRAPI_URL}/api/users/me?populate=groupe_client`,
                     { headers: { Authorization: `Bearer ${authData.jwt}` } },
                   );
                   if (meRes.ok) {
-                    const me = await meRes.json() as StrapiMeResponse;
+                    const me = (await meRes.json()) as StrapiMeResponse;
                     if (me.groupe_client) {
                       groupeId = me.groupe_client.id;
                       groupeSlug = me.groupe_client.slug;
@@ -130,7 +109,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 } catch {
                   // Non bloquant
                 }
-
                 return {
                   id: String(authData.user.id),
                   email: authData.user.email,
@@ -143,29 +121,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               }
             }
           } catch {
-            // Strapi inaccessible — on passe en mode local si LOCAL_USERS est défini
+            // Strapi inaccessible — on passe aux modes suivants
           }
         }
 
-        // ── Mode 2 : Utilisateurs locaux ─────────────────────────
+        // ── 2. Base de données — table User ──────────────────────
+        if (isDBConfigured()) {
+          try {
+            const u = await prisma.user.findUnique({ where: { email } });
+            if (u && (await checkPassword(password, u.passwordHash))) {
+              return { id: u.id, email: u.email, name: u.name, groupeSlug: u.groupe };
+            }
+          } catch (e) {
+            console.warn("[auth] Recherche User en base échouée.", e);
+          }
+        }
+
+        // ── 3. LOCAL_USERS (héritage) ────────────────────────────
         const localUsers = getLocalUsers();
         if (localUsers.length > 0) {
-          const user = localUsers.find(
-            (u) => u.email.trim().toLowerCase() === email,
-          );
-          if (user && await checkPassword(password, user.password)) {
-            const adminEmails = (process.env.ADMIN_EMAILS ?? "")
-              .split(",")
-              .map((e) => e.trim().toLowerCase())
-              .filter(Boolean);
-
-            return {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              groupeSlug: user.groupe,
-              isAdmin: adminEmails.includes(user.email.trim().toLowerCase()),
-            };
+          const user = localUsers.find((u) => u.email.trim().toLowerCase() === email);
+          if (user && (await checkPassword(password, user.password))) {
+            return { id: user.id, email: user.email, name: user.name, groupeSlug: user.groupe };
           }
         }
 
@@ -173,57 +150,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        const u = user as typeof user & {
-          strapiToken?: string;
-          strapiId?: string;
-          groupeId?: number;
-          groupeSlug?: string;
-          isAdmin?: boolean;
-        };
-        token.strapiToken = u.strapiToken;
-        token.strapiId = u.strapiId;
-        token.groupeId = u.groupeId;
-        token.groupeSlug = u.groupeSlug;
-      }
-      // Re-vérification admin à chaque renouvellement de token (pas seulement à la connexion)
-      const adminEmails = (process.env.ADMIN_EMAILS ?? "")
-        .split(",")
-        .map((e) => e.trim().toLowerCase())
-        .filter(Boolean);
-      const tokenEmail = (token.email ?? "").trim().toLowerCase();
-      token.isAdmin =
-        adminEmails.length > 0 &&
-        tokenEmail !== "" &&
-        adminEmails.includes(tokenEmail);
-      return token;
-    },
-    session({ session, token }) {
-      session.user.strapiToken = token.strapiToken as string | undefined;
-      session.user.strapiId = token.strapiId as string | undefined;
-      session.user.groupeId = token.groupeId as number | undefined;
-      session.user.groupeSlug = token.groupeSlug as string | undefined;
-
-      // Re-vérification admin à chaque requête depuis ADMIN_EMAILS
-      // (pas besoin de se déconnecter/reconnecter si la variable change)
-      const adminEmails = (process.env.ADMIN_EMAILS ?? "")
-        .split(",")
-        .map((e) => e.trim().toLowerCase())
-        .filter(Boolean);
-      const userEmail = (session.user?.email ?? "").trim().toLowerCase();
-      session.user.isAdmin =
-        adminEmails.length > 0 &&
-        userEmail !== "" &&
-        adminEmails.includes(userEmail);
-
-      return session;
-    },
-  },
-
-  pages: {
-    signIn: "/login",
-  },
 });

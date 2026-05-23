@@ -1,5 +1,9 @@
-import { auth } from "@/auth";
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
+import authConfig from "@/auth.config";
+
+// Instance Edge-safe (sans Prisma) — uniquement pour lire la session dans le middleware.
+const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   if (!req.auth) {
