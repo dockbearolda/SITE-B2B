@@ -10,6 +10,7 @@ import { useProjects } from "@/lib/projects-context";
 import { useToast } from "@/lib/toast-context";
 import { generateQuotePDF } from "@/lib/generate-quote-pdf";
 import { getProductImagePath } from "@/lib/product-image";
+import { RollingNumber } from "@/components/ui/rolling-number";
 import { CartProgressBar } from "./cart-progress-bar";
 import { MarginDashboard } from "./margin-dashboard";
 import styles from "./cart-sidebar.module.css";
@@ -254,8 +255,8 @@ export function CartSidebarContent({ onValidate }: CartSidebarContentProps) {
 
       {/* ── Liste scrollable ── */}
       <div className={styles.scrollArea}>
-        <p className={styles.count}>
-          {totalItems} article{totalItems > 1 ? "s" : ""}
+        <p className={styles.count} aria-live="polite">
+          <RollingNumber value={totalItems} />{" "}article{totalItems > 1 ? "s" : ""}
         </p>
 
         <div className={styles.itemList}>
@@ -276,7 +277,11 @@ export function CartSidebarContent({ onValidate }: CartSidebarContentProps) {
                   <span className={styles.itemLabel}>{item.label}</span>
                   {item.prixAchat != null && item.prixAchat > 0 && (
                     <span className={styles.itemSubtotal}>
-                      {fmt(item.prixAchat)}&nbsp;<span className={styles.itemSubtotalTotal}>= {fmt(item.prixAchat * item.quantity)}</span>
+                      <RollingNumber value={item.prixAchat} format={fmt} />
+                      &nbsp;
+                      <span className={styles.itemSubtotalTotal}>
+                        = <RollingNumber value={item.prixAchat * item.quantity} format={fmt} />
+                      </span>
                     </span>
                   )}
                 </div>
@@ -290,7 +295,9 @@ export function CartSidebarContent({ onValidate }: CartSidebarContentProps) {
                     >
                       −
                     </button>
-                    <span className={styles.qtyValue}>{item.quantity}</span>
+                    <span className={styles.qtyValue} aria-live="polite">
+                      <RollingNumber value={item.quantity} />
+                    </span>
                     <button
                       className={styles.qtyBtn}
                       aria-label="Augmenter"
