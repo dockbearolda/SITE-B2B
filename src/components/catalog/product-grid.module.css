@@ -160,18 +160,42 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 6px 10px;
+  gap: 8px 14px;
+  padding: 7px 12px;
   border: 1px solid rgba(15, 17, 19, 0.07);
   border-radius: 12px;
   background: var(--color-surface-strong);
+}
+
+/* Filter group (label + controls) */
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterGroupLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  white-space: nowrap;
+  user-select: none;
 }
 
 /* Color swatches */
 .swatches {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+}
+
+/* Swatch with tooltip */
+.swatchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .swatch {
@@ -188,14 +212,51 @@
   flex-shrink: 0;
 }
 
-.swatch:hover {
+.swatch:hover,
+.swatch:focus-visible {
   opacity: 1;
-  transform: scale(1.18);
+  transform: scale(1.22);
 }
 
 .swatchActive {
   opacity: 1;
   box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--color-text);
+}
+
+/* CSS tooltip */
+.swatchTooltip {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  background: var(--color-dark, #1d1d1f);
+  color: #fff;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  padding: 3px 7px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease, transform 120ms ease;
+  z-index: 10;
+}
+
+.swatchTooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--color-dark, #1d1d1f);
+}
+
+.swatchWrapper:hover .swatchTooltip,
+.swatchWrapper:focus-within .swatchTooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Text pills */
@@ -206,7 +267,7 @@
 }
 
 .pill {
-  padding: 5px 12px;
+  padding: 4px 11px;
   border: 1px solid rgba(15, 17, 19, 0.1);
   border-radius: 100px;
   background: var(--color-bg);
@@ -230,9 +291,16 @@
   border-color: transparent;
 }
 
-.clearBtn {
+/* Right-side actions (clear + info) */
+.filterActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   margin-left: auto;
-  padding: 5px 10px;
+}
+
+.clearBtn {
+  padding: 4px 9px;
   border: none;
   background: transparent;
   color: var(--color-muted);
@@ -244,6 +312,125 @@
 
 .clearBtn:hover {
   color: #c0392b;
+}
+
+/* ⓘ En savoir plus button + popover */
+.stockInfoWrapper {
+  position: relative;
+}
+
+.stockInfoBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border: 1px solid rgba(15, 17, 19, 0.1);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  white-space: nowrap;
+}
+
+.stockInfoBtn:hover,
+.stockInfoBtn[aria-expanded="true"] {
+  background: var(--color-dark);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Invisible backdrop to close on outside click */
+.stockInfoOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+}
+
+.stockInfoPopover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: 300px;
+  background: #fff;
+  border: 1px solid rgba(15, 17, 19, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 18px 18px 16px;
+  z-index: 20;
+  animation: popoverIn 150ms ease forwards;
+}
+
+@keyframes popoverIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stockInfoClose {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(15, 17, 19, 0.06);
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+
+.stockInfoClose:hover {
+  background: rgba(15, 17, 19, 0.12);
+}
+
+.stockInfoTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+  margin: 0 0 10px;
+  padding-right: 24px;
+}
+
+.stockInfoList {
+  margin: 0;
+  padding: 0 0 0 16px;
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stockInfoList li {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.stockInfoList strong {
+  color: var(--color-text);
+}
+
+.stockInfoList em {
+  font-style: italic;
+  color: var(--color-text);
+}
+
+.stockInfoLink {
+  color: var(--color-primary, #0071e3);
+  text-decoration: none;
+}
+
+.stockInfoLink:hover {
+  text-decoration: underline;
 }
 
 .filterCount {
