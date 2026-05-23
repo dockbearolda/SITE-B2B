@@ -43,6 +43,13 @@ function validateField(field: keyof FormFields, value: string): string | null {
   }
 }
 
+function fmt(n: number): string {
+  return n.toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }) + " €";
+}
+
 function CheckIcon() {
   return (
     <span className={`${styles.fieldIcon} ${styles.fieldIconValid}`} aria-hidden="true">
@@ -231,6 +238,7 @@ export default function CommandePage() {
             </Link>
           </div>
         ) : (
+          <>
           <div className={styles.layout}>
             {/* ── Col 1 : Récapitulatif articles ── */}
             <div className={styles.cartSection}>
@@ -283,9 +291,7 @@ export default function CommandePage() {
               </div>
             </div>
 
-            {/* ── Col 2 : Tableau de rentabilité masqué temporairement ── */}
-
-            {/* ── Col 3 : Formulaire de contact ── */}
+            {/* ── Col 2 : Formulaire de contact ── */}
             <form className={styles.formSection} onSubmit={handleSubmit} noValidate>
               <div className={styles.formHeader}>
                 <h2 className={styles.formTitle}>Vos informations</h2>
@@ -439,6 +445,33 @@ export default function CommandePage() {
 
             </form>
           </div>
+
+          {/* ── Récap financier ── */}
+          {hasPrices && (
+            <div className={styles.recapFinancier}>
+              <p className={styles.recapFinancierTitle}>Récap financier</p>
+              <div className={styles.recapMetrics}>
+                <div className={styles.recapMetric}>
+                  <span className={styles.recapValue}>{fmt(totalB2B)}</span>
+                  <span className={styles.recapLabel}>Investissement</span>
+                  <span className={styles.recapSub}>coût total B2B</span>
+                </div>
+                <div className={styles.recapMetric}>
+                  <span className={styles.recapValue}>{fmt(totalRevente)}</span>
+                  <span className={styles.recapLabel}>CA Potentiel</span>
+                  <span className={styles.recapSub}>chiffre d&apos;affaires à la revente</span>
+                </div>
+                <div className={styles.recapMetric}>
+                  <span className={`${styles.recapValue} ${margeNette >= 0 ? styles.recapValuePositive : styles.recapValueNegative}`}>
+                    {margeNette >= 0 ? "+" : ""}{fmt(margeNette)}
+                  </span>
+                  <span className={styles.recapLabel}>Bénéfice</span>
+                  <span className={styles.recapSub}>bénéfice net projeté</span>
+                </div>
+              </div>
+            </div>
+          )}
+          </>
         )}
       </Container>
     </main>

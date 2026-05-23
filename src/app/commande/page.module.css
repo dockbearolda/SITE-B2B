@@ -46,7 +46,7 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 1fr minmax(280px, 320px) 380px;
+  grid-template-columns: 3fr 2fr;
   gap: 28px;
   align-items: start;
 }
@@ -55,7 +55,11 @@
 
 .cartSection {
   display: grid;
-  gap: 16px;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid rgba(15, 17, 19, 0.1);
+  border-radius: 24px;
+  background: var(--color-surface-strong);
 }
 
 /* ── Col 2 : Rentabilité ── */
@@ -110,7 +114,7 @@
   padding: 14px 18px;
   border: 1px solid rgba(15, 17, 19, 0.08);
   border-radius: 18px;
-  background: var(--color-surface-strong);
+  background: var(--color-bg);
   transition: border-color var(--transition-fast);
 }
 
@@ -130,7 +134,7 @@
   height: 52px;
   border-radius: 10px;
   overflow: hidden;
-  background: var(--color-bg);
+  background: rgba(15, 17, 19, 0.05);
 }
 
 .thumbImg {
@@ -140,7 +144,7 @@
 .thumbPlaceholder {
   width: 100%;
   height: 100%;
-  background: var(--color-bg);
+  background: rgba(15, 17, 19, 0.05);
 }
 
 .cartItemInfo {
@@ -242,6 +246,78 @@
   color: #c0392b;
   background: rgba(192, 57, 43, 0.06);
   border-color: rgba(192, 57, 43, 0.15);
+}
+
+/* ── Récap financier ── */
+
+.recapFinancier {
+  margin-top: 28px;
+  padding: 24px 28px;
+  border: 1px solid rgba(15, 17, 19, 0.1);
+  border-radius: 24px;
+  background: var(--color-surface-strong);
+  display: grid;
+  gap: 18px;
+}
+
+.recapFinancierTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.recapMetrics {
+  display: flex;
+  align-items: stretch;
+}
+
+.recapMetric {
+  flex: 1;
+  display: grid;
+  gap: 5px;
+  padding: 0 28px;
+  border-left: 1px solid rgba(15, 17, 19, 0.09);
+}
+
+.recapMetric:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.recapMetric:last-child {
+  padding-right: 0;
+}
+
+.recapValue {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.recapLabel {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.recapSub {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.recapValuePositive {
+  color: #10b981;
+}
+
+.recapValueNegative {
+  color: #c0392b;
 }
 
 /* ── Formulaire ── */
@@ -676,6 +752,18 @@
     display: none;
   }
 
+  /* Récap financier imprimé */
+  .recapFinancier {
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    break-inside: avoid;
+    margin-top: 16px;
+  }
+
+  .recapMetric {
+    border-left-color: #d0d0d0;
+  }
+
   /* Prix et quantités en tabular-nums (déjà défini, renforcé) */
   .cartItemPrice,
   .qtyValue {
@@ -683,32 +771,38 @@
   }
 }
 
-/* Tablette : 2 colonnes (cart+marge à gauche, form à droite) */
-@media (max-width: 1200px) {
+/* Tablette étroite : ajuster le ratio si l'espace se réduit */
+@media (max-width: 1100px) {
   .layout {
-    grid-template-columns: 1fr 360px;
-    grid-template-areas:
-      "cart  form"
-      "marge form";
+    grid-template-columns: 3fr 2fr;
   }
-
-  .cartSection  { grid-area: cart; }
-  .marginSection { grid-area: marge; position: static; }
-  .formSection  { grid-area: form; }
 }
 
 /* Mobile : 1 colonne */
 @media (max-width: 760px) {
   .layout {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "cart"
-      "marge"
-      "form";
   }
 
   .formSection {
     position: static;
+  }
+
+  .recapMetrics {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .recapMetric {
+    padding: 0;
+    border-left: none;
+    border-top: 1px solid rgba(15, 17, 19, 0.09);
+    padding-top: 18px;
+  }
+
+  .recapMetric:first-child {
+    border-top: none;
+    padding-top: 0;
   }
 }
 
