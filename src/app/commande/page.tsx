@@ -238,7 +238,6 @@ export default function CommandePage() {
             </Link>
           </div>
         ) : (
-          <>
           <div className={styles.layout}>
             {/* ── Col 1 : Récapitulatif articles ── */}
             <div className={styles.cartSection}>
@@ -262,9 +261,19 @@ export default function CommandePage() {
                         <div className={styles.cartItemInfo}>
                           <span className={styles.cartItemRef}>{item.ref}</span>
                           <span className={styles.cartItemLabel}>{item.label}</span>
-                          {/* Prix masqués temporairement */}
                         </div>
                       </div>
+
+                      {item.prixAchat != null && item.prixAchat > 0 && (
+                        <div className={styles.cartItemSubtotal}>
+                          <span className={styles.cartItemCalc}>
+                            {item.quantity} × {fmt(item.prixAchat)}
+                          </span>
+                          <span className={styles.cartItemLineTotal}>
+                            = {fmt(item.prixAchat * item.quantity)}
+                          </span>
+                        </div>
+                      )}
 
                       <div className={styles.cartItemActions}>
                         <div className={styles.quantityControl}>
@@ -293,6 +302,30 @@ export default function CommandePage() {
 
             {/* ── Col 2 : Formulaire de contact ── */}
             <form className={styles.formSection} onSubmit={handleSubmit} noValidate>
+              {/* ── Total commande (haut de la colonne formulaire) ── */}
+              {hasPrices && (
+                <div className={styles.orderTotal}>
+                  <span className={styles.orderTotalLabel}>Total commande</span>
+
+                  <div className={styles.orderTotalRow}>
+                    <span className={styles.orderTotalName}>Investissement B2B</span>
+                    <span className={styles.orderTotalValueLg}>{fmt(totalB2B)}</span>
+                  </div>
+
+                  <div className={styles.orderTotalRow}>
+                    <span className={styles.orderTotalName}>CA Potentiel</span>
+                    <span className={styles.orderTotalValueMd}>{fmt(totalRevente)}</span>
+                  </div>
+
+                  <div className={styles.orderProfitRow}>
+                    <span className={styles.orderProfitName}>Bénéfice net projeté</span>
+                    <span className={styles.orderProfitValue}>
+                      {margeNette >= 0 ? "+" : ""}{fmt(margeNette)}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               <div className={styles.formHeader}>
                 <h2 className={styles.formTitle}>Vos informations</h2>
                 <p className={styles.formSubtitle}>Commande · Retrait en boutique</p>
@@ -445,33 +478,6 @@ export default function CommandePage() {
 
             </form>
           </div>
-
-          {/* ── Récap financier ── */}
-          {hasPrices && (
-            <div className={styles.recapFinancier}>
-              <p className={styles.recapFinancierTitle}>Récap financier</p>
-              <div className={styles.recapMetrics}>
-                <div className={styles.recapMetric}>
-                  <span className={styles.recapValue}>{fmt(totalB2B)}</span>
-                  <span className={styles.recapLabel}>Investissement</span>
-                  <span className={styles.recapSub}>coût total B2B</span>
-                </div>
-                <div className={styles.recapMetric}>
-                  <span className={styles.recapValue}>{fmt(totalRevente)}</span>
-                  <span className={styles.recapLabel}>CA Potentiel</span>
-                  <span className={styles.recapSub}>chiffre d&apos;affaires à la revente</span>
-                </div>
-                <div className={styles.recapMetric}>
-                  <span className={`${styles.recapValue} ${margeNette >= 0 ? styles.recapValuePositive : styles.recapValueNegative}`}>
-                    {margeNette >= 0 ? "+" : ""}{fmt(margeNette)}
-                  </span>
-                  <span className={styles.recapLabel}>Bénéfice</span>
-                  <span className={styles.recapSub}>bénéfice net projeté</span>
-                </div>
-              </div>
-            </div>
-          )}
-          </>
         )}
       </Container>
     </main>

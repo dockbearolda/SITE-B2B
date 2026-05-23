@@ -123,6 +123,32 @@
   align-items: center;
   gap: 14px;
   min-width: 0;
+  flex: 1;
+}
+
+/* Sous-total par ligne (qté × PU = total) */
+.cartItemSubtotal {
+  display: grid;
+  gap: 1px;
+  justify-items: end;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.cartItemCalc {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.cartItemLineTotal {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  white-space: nowrap;
 }
 
 /* Thumbnail */
@@ -248,76 +274,89 @@
   border-color: rgba(192, 57, 43, 0.15);
 }
 
-/* ── Récap financier ── */
+/* ── Bloc Total commande (haut de la colonne formulaire) ── */
 
-.recapFinancier {
-  margin-top: 28px;
-  padding: 24px 28px;
-  border: 1px solid rgba(15, 17, 19, 0.1);
-  border-radius: 24px;
-  background: var(--color-surface-strong);
+.orderTotal {
   display: grid;
-  gap: 18px;
+  gap: 11px;
+  padding: 18px 20px;
+  border: 1px solid rgba(15, 17, 19, 0.1);
+  border-radius: 18px;
+  background: var(--color-bg);
 }
 
-.recapFinancierTitle {
+.orderTotalLabel {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-muted);
-  margin: 0;
 }
 
-.recapMetrics {
+.orderTotalRow {
   display: flex;
-  align-items: stretch;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.recapMetric {
-  flex: 1;
-  display: grid;
-  gap: 5px;
-  padding: 0 28px;
-  border-left: 1px solid rgba(15, 17, 19, 0.09);
-}
-
-.recapMetric:first-child {
-  padding-left: 0;
-  border-left: none;
-}
-
-.recapMetric:last-child {
-  padding-right: 0;
-}
-
-.recapValue {
-  font-size: 1.55rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-
-.recapLabel {
-  font-size: 0.84rem;
-  font-weight: 700;
-  color: var(--color-text);
-  letter-spacing: -0.01em;
-}
-
-.recapSub {
-  font-size: 0.74rem;
-  font-weight: 500;
+.orderTotalName {
+  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--color-muted);
 }
 
-.recapValuePositive {
-  color: #10b981;
+/* Investissement B2B : gros, noir */
+.orderTotalValueLg {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.recapValueNegative {
-  color: #c0392b;
+/* CA Potentiel : moyen */
+.orderTotalValueMd {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Bénéfice net projeté : vert, mis en avant */
+.orderProfitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 1px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+}
+
+.orderProfitName {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(167, 243, 208, 0.85);
+}
+
+.orderProfitValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #a7f3d0;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ── Formulaire ── */
@@ -747,21 +786,38 @@
     display: none;
   }
 
-  /* Masquer le formulaire de contact entièrement */
+  /* Garder le bloc Total commande, masquer le reste du formulaire */
   .formSection {
+    position: static;
+    border: none;
+    padding: 0;
+    background: none;
+    break-inside: avoid;
+  }
+
+  .formHeader,
+  .fieldGroup,
+  .error,
+  .submitBtn,
+  .pdfBtn {
     display: none;
   }
 
-  /* Récap financier imprimé */
-  .recapFinancier {
+  /* Total commande imprimable (pas de fond foncé) */
+  .orderTotal {
     border: 1px solid #d0d0d0;
-    border-radius: 8px;
-    break-inside: avoid;
     margin-top: 16px;
+    break-inside: avoid;
   }
 
-  .recapMetric {
-    border-left-color: #d0d0d0;
+  .orderProfitRow {
+    background: none;
+    border: 1px solid #d0d0d0;
+  }
+
+  .orderProfitName,
+  .orderProfitValue {
+    color: #000;
   }
 
   /* Prix et quantités en tabular-nums (déjà défini, renforcé) */
@@ -787,23 +843,6 @@
   .formSection {
     position: static;
   }
-
-  .recapMetrics {
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .recapMetric {
-    padding: 0;
-    border-left: none;
-    border-top: 1px solid rgba(15, 17, 19, 0.09);
-    padding-top: 18px;
-  }
-
-  .recapMetric:first-child {
-    border-top: none;
-    padding-top: 0;
-  }
 }
 
 @media (max-width: 540px) {
@@ -815,6 +854,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  .cartItemSubtotal {
+    justify-items: start;
+    text-align: left;
   }
 
   .cartItemActions {
