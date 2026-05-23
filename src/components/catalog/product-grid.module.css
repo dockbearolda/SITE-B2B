@@ -625,8 +625,8 @@
 /* ── Card ───────────────────────────────────────────────────── */
 
 .itemCard {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
   padding: 16px;
   border: 1px solid #EAEAEA;
@@ -723,8 +723,16 @@
 /* ── Card content ───────────────────────────────────────────── */
 
 .itemContent {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  flex: 1;           /* occupe toute la hauteur restante après l'image */
+  min-height: 0;
   gap: 10px;
+}
+
+/* Zone bouton — toujours ancrée en bas de la carte */
+.itemActions {
+  margin-top: auto;
 }
 
 .itemMeta {
@@ -789,46 +797,58 @@
 .pricingBlock {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto;
   align-items: center;
-  gap: 4px 6px;
-  padding: 10px 11px 8px;
+  column-gap: 8px;
+  row-gap: 8px;
+  padding: 10px 12px;
   background: var(--color-surface-strong, #f5f5f7);
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
+/* Colonne gauche : Achat */
 .colAchat {
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
 }
 
+/* Flèche centrale */
 .colArrow {
-  font-size: 1rem;
-  color: #c0c0c5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  opacity: 0.6;
   line-height: 1;
-  padding: 0 1px;
-  margin-top: 14px; /* aligner verticalement avec les valeurs */
-  align-self: center;
 }
 
+/* Colonne droite : Revente */
 .colRevente {
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
 }
 
+/* Label "Achat" / "Revente" */
 .colLabel {
-  display: block;
-  font-size: 0.57rem;
+  font-size: 0.58rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   color: var(--color-muted);
+  opacity: 0.7;
   line-height: 1;
   margin-bottom: 2px;
 }
 
+/* Valeur prix */
 .colVal {
-  display: block;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text, #1d1d1f);
@@ -836,30 +856,35 @@
   line-height: 1;
 }
 
+/* Prix revente — légèrement plus sombre */
 .colValRevente {
-  color: #555;
+  color: var(--color-text);
 }
 
+/* Ligne badge marge — s'étend sur les 3 colonnes */
 .marginRow {
   grid-column: 1 / -1;
-  text-align: center;
-  padding-top: 6px;
-  margin-top: 4px;
-  border-top: 1px dashed rgba(0, 0, 0, 0.10);
+  display: flex;
+  justify-content: center;
+  padding-top: 2px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08);
 }
 
+/* Badge marge verte */
 .marginBadge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #eafaf1;
-  border: 1px solid #a8e6c3;
+  padding: 3px 9px;
   border-radius: 100px;
-  padding: 2px 10px;
-  font-size: 0.7rem;
+  background: rgba(39, 174, 96, 0.10);
+  border: 1px solid rgba(39, 174, 96, 0.18);
+  color: #27ae60;
+  font-size: 0.71rem;
   font-weight: 700;
-  color: #1a7f4b;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */

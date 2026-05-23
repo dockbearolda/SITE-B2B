@@ -3,6 +3,7 @@ import Link from "next/link";
 import { catalogFamilies, catalogSummary } from "@/data/catalog";
 import { Container } from "@/components/ui/container";
 import { MediaPlaceholder } from "@/components/ui/media-placeholder";
+import { AnimatedNumber } from "@/components/ui/animated-number";
 
 import styles from "./hero-section.module.css";
 
@@ -34,14 +35,16 @@ function AtelierBadge() {
 
 const heroMetrics = [
   {
-    value: `${catalogSummary.totalReferences}+`,
+    target: catalogSummary.totalReferences,
+    suffix: "+",
     label: "Références",
   },
   {
-    value: String(catalogSummary.totalFamilies),
+    target: catalogSummary.totalFamilies,
+    suffix: "",
     label: "Familles",
   },
-] as const;
+];
 
 export function HeroSection() {
   const previewFamilies = catalogFamilies.slice(0, 3);
@@ -74,8 +77,13 @@ export function HeroSection() {
 
             <div className={styles.metrics}>
               {heroMetrics.map((metric) => (
-                <div key={metric.value} className={styles.metricCard}>
-                  <span className={styles.metricValue}>{metric.value}</span>
+                <div key={metric.label} className={styles.metricCard}>
+                  <span className={styles.metricValue}>
+                    <AnimatedNumber
+                      target={metric.target}
+                      format={(n) => String(n) + metric.suffix}
+                    />
+                  </span>
                   <span className={styles.metricLabel}>{metric.label}</span>
                 </div>
               ))}
@@ -106,7 +114,10 @@ export function HeroSection() {
                   <div className={styles.familyTop}>
                     <h3 className={styles.familyName}>{family.name}</h3>
                     <span className={styles.familyCount}>
-                      {family.referenceCount}{" "}réf.
+                      <AnimatedNumber
+                        target={family.referenceCount}
+                        format={(n) => String(n)}
+                      />{" "}réf.
                     </span>
                   </div>
 

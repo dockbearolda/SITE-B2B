@@ -29,6 +29,8 @@
   font-weight: 600;
   color: var(--color-muted);
   white-space: nowrap;
+  flex: 1;        /* prend l'espace restant dans controlRow */
+  min-width: 0;   /* évite l'overflow hors du flex container */
 }
 
 .gainAmount {
@@ -39,7 +41,8 @@
 .controlRow {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap; /* évite l'overflow sur carte étroite */
 }
 
 @media (max-width: 640px) {
@@ -55,7 +58,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  flex: 0 0 128px; /* largeur fixe — les 3 boutons −/valeur/+ */
   border: 1px solid rgba(15, 17, 19, 0.14);
   border-radius: 12px;
   overflow: hidden;

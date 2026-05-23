@@ -1,5 +1,6 @@
 "use client";
 
+import { RollingNumber } from "@/components/ui/rolling-number";
 import styles from "./cart-progress-bar.module.css";
 
 type CartProgressBarProps = {
@@ -34,7 +35,9 @@ export function CartProgressBar({
         ) : (
           <>
             Plus que{" "}
-            <span className={styles.amount}>{fmt(remaining)}</span>
+            <span className={styles.amount}>
+              <RollingNumber value={remaining} format={fmt} />
+            </span>
             {" "}pour la livraison gratuite
           </>
         )}

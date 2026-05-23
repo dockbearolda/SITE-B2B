@@ -5,6 +5,7 @@ import { catalogFamilies } from "@/data/catalog";
 import { Container } from "@/components/ui/container";
 import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { AnimatedNumber } from "@/components/ui/animated-number";
 
 import styles from "./catalog-overview-section.module.css";
 
@@ -41,7 +42,10 @@ export function CatalogOverviewSection() {
                   <div className={styles.meta}>
                     <h3 className={styles.name}>{family.name}</h3>
                     <span className={styles.count}>
-                      {family.referenceCount}{" "}réf.
+                      <AnimatedNumber
+                        target={family.referenceCount}
+                        format={(n) => String(n)}
+                      />{" "}réf.
                     </span>
                   </div>
                   <p className={styles.strapline}>{family.strapline}</p>
@@ -53,7 +57,10 @@ export function CatalogOverviewSection() {
                       <div className={styles.subfamilyMeta}>
                         <span>{subfamily.name}</span>
                         <span className={styles.subfamilyCount}>
-                          {subfamily.itemCount}{" "}réf.
+                          <AnimatedNumber
+                            target={subfamily.itemCount}
+                            format={(n) => String(n)}
+                          />{" "}réf.
                         </span>
                       </div>
                     </div>

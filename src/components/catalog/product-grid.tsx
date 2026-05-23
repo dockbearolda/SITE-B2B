@@ -202,14 +202,16 @@ const ProductCard = memo(function ProductCard({ item, siblingColors, onQuickView
           revente={parsePrice(item.retailPrice)}
         />
 
-        <AddToCartButton
-          productRef={item.ref}
-          productLabel={item.label}
-          productPrixAchat={parsePrice(item.resellerPrice)}
-          productPrixRevente={parsePrice(item.retailPrice)}
-          moq={item.moq ?? 1}
-          step={item.step}
-        />
+        <div className={styles.itemActions}>
+          <AddToCartButton
+            productRef={item.ref}
+            productLabel={item.label}
+            productPrixAchat={parsePrice(item.resellerPrice)}
+            productPrixRevente={parsePrice(item.retailPrice)}
+            moq={item.moq ?? 1}
+            step={item.step}
+          />
+        </div>
       </div>
     </article>
   );
