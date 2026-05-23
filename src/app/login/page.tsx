@@ -10,7 +10,7 @@ import styles from "./page.module.css";
 
 const STRAPI_URL = (process.env.NEXT_PUBLIC_STRAPI_URL ?? "").replace(/\/$/, "");
 
-type Tab = "login" | "register";
+type Tab = "login" | "register" | "admin";
 
 function LoginForm() {
   const router = useRouter();
@@ -24,6 +24,12 @@ function LoginForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
+
+  const switchTab = useCallback((t: Tab) => {
+    setTab(t);
+    setError("");
+    setPassword("");
+  }, []);
 
   const handleLogin = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +51,29 @@ function LoginForm() {
       router.refresh();
     }
   }, [email, password, callbackUrl, router]);
+
+  // Accès administrateur : mot de passe unique, sans email.
+  const handleAdminLogin = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const result = await signIn("credentials", {
+      email: "",
+      password,
+      redirect: false,
+    });
+
+    setLoading(false);
+
+    if (result?.error) {
+      setError("Mot de passe incorrect.");
+    } else {
+      const dest = callbackUrl.startsWith("/admin") ? callbackUrl : "/admin";
+      router.push(dest);
+      router.refresh();
+    }
+  }, [password, callbackUrl, router]);
 
   const handleRegister = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,8 +126,14 @@ function LoginForm() {
     <div className={styles.card}>
       <div className={styles.header}>
         <Link href="/" className={styles.logo}>OLDA</Link>
-        <h1 className={styles.title}>Espace client</h1>
-        <p className={styles.subtitle}>Accédez à votre historique de commandes</p>
+        <h1 className={styles.title}>
+          {tab === "admin" ? "Administration" : "Espace client"}
+        </h1>
+        <p className={styles.subtitle}>
+          {tab === "admin"
+            ? "Entrez le mot de passe administrateur"
+            : "Accédez à votre historique de commandes"}
+        </p>
       </div>
 
       {registered && (
@@ -110,19 +145,25 @@ function LoginForm() {
       <div className={styles.tabs}>
         <button
           className={`${styles.tab} ${tab === "login" ? styles.tabActive : ""}`}
-          onClick={() => { setTab("login"); setError(""); }}
+          onClick={() => switchTab("login")}
         >
           Connexion
         </button>
         <button
           className={`${styles.tab} ${tab === "register" ? styles.tabActive : ""}`}
-          onClick={() => { setTab("register"); setError(""); }}
+          onClick={() => switchTab("register")}
         >
           Créer un compte
         </button>
+        <button
+          className={`${styles.tab} ${tab === "admin" ? styles.tabActive : ""}`}
+          onClick={() => switchTab("admin")}
+        >
+          Admin
+        </button>
       </div>
 
-      {tab === "login" ? (
+      {tab === "login" && (
         <form className={styles.form} onSubmit={handleLogin} noValidate>
           <label className={styles.label}>
             Email
@@ -156,7 +197,33 @@ function LoginForm() {
             {loading ? <span className={styles.spinner} /> : "Se connecter"}
           </button>
         </form>
-      ) : (
+      )}
+
+      {tab === "admin" && (
+        <form className={styles.form} onSubmit={handleAdminLogin} noValidate>
+          <label className={styles.label}>
+            Mot de passe administrateur
+            <input
+              className={styles.input}
+              type="password"
+              autoComplete="off"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoFocus
+            />
+          </label>
+
+          {error && <p className={styles.error}>{error}</p>}
+
+          <button type="submit" className={styles.submitBtn} disabled={loading}>
+            {loading ? <span className={styles.spinner} /> : "Entrer dans l'administration"}
+          </button>
+        </form>
+      )}
+
+      {tab === "register" && (
         <form className={styles.form} onSubmit={handleRegister} noValidate>
           <label className={styles.label}>
             Nom d&apos;utilisateur

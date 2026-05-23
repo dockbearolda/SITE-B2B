@@ -72,10 +72,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Mot de passe", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials?.email || !credentials?.password) return null;
+        const password = String(credentials?.password ?? "");
 
+        // ── 0. Accès admin par mot de passe unique (ADMIN_PASSWORD) ──
+        // Permet au patron d'entrer dans /admin avec UN seul mot de passe (sans email).
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        if (adminPassword && password === adminPassword) {
+          const adminEmail =
+            (process.env.ADMIN_EMAILS ?? "").split(",")[0]?.trim().toLowerCase() || "admin@olda";
+          return { id: "admin", email: adminEmail, name: "Administrateur" };
+        }
+
+        if (!credentials?.email || !credentials?.password) return null;
         const email = String(credentials.email).trim().toLowerCase();
-        const password = String(credentials.password);
 
         // ── 1. Strapi ────────────────────────────────────────────
         if (STRAPI_URL) {
