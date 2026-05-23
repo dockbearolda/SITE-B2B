@@ -332,6 +332,27 @@ async function main() {
     }
   }
 
+  await prisma.siteContent.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      brandName: "Atelier OLDA",
+      contactEmail: "atelierolda@gmail.com",
+      footerAddress: "Atelier OLDA\n1 Rue Opales, Grand Case\nSaint-Martin (French West Indies)",
+      metaTitle: "Atelier OLDA",
+      ctaLabel: "Découvrir nos produits",
+      ctaHref: "/catalogue/tasses/tasse-ceramique-fuck",
+      navigation: [
+        { label: "Catalogue", href: "/catalogue" },
+        { label: "Sélection", href: "/#selection" },
+        { label: "Méthode", href: "/#methode" },
+        { label: "Contact", href: "/#contact" },
+      ],
+    },
+  });
+  console.log("  ✓ SiteContent (id=1)");
+
   console.log("✅ Seed complet terminé !");
 }
 

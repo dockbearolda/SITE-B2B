@@ -1,7 +1,11 @@
 import Link from "next/link";
+import { getSiteContent } from "@/lib/site-content";
 import styles from "./page.module.css";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const c = await getSiteContent();
   return (
     <main className={styles.main}>
       <div className={styles.content}>
@@ -18,8 +22,10 @@ export default function Home() {
           <path d="M140.12,108.5c-1.61-20.24-18-36.63-38.24-38.24-25.72-2.04-47.09,19.32-45.05,45.04,1.6,20.24,18,36.64,38.24,38.25.12,0,.23,0,.34.02l.23-39.79v-.05l-11.32,11.07s-1.19-11.25,6.13-12.84h-13s4.12-7.32,14.54-4.85l-7.67-7.67s11.86-1.72,12.82,6.62c1.07-8.9,12.54-6.48,12.54-6.48l-7.92,8.04c8.81-3.63,14.91,4.33,14.91,4.33h-13.05c4.85,1.4,6.01,6.08,6.2,9.41.14,2.05-.12,3.59-.12,3.59l-3.54-3.59-7.55-7.62.24,39.91c24-.2,43.23-20.71,41.29-45.17Z" />
         </svg>
 
-        <Link href="/catalogue/tasses/tasse-ceramique-fuck" className={styles.cta}>
-          Découvrir nos produits
+        {c.heroTagline ? <p className={styles.tagline}>{c.heroTagline}</p> : null}
+
+        <Link href={c.ctaHref} className={styles.cta}>
+          {c.ctaLabel}
         </Link>
       </div>
     </main>

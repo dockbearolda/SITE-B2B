@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "SiteContent" ADD COLUMN     "bic" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "footerAddress" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "iban" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "siret" TEXT NOT NULL DEFAULT '';

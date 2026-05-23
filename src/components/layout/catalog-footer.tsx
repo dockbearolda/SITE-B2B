@@ -1,6 +1,10 @@
+import { getSiteContent } from "@/lib/site-content";
 import styles from "./catalog-footer.module.css";
 
-export function CatalogFooter() {
+export async function CatalogFooter() {
+  const c = await getSiteContent();
+  const addressLines = c.footerAddress.split("\n").filter(Boolean);
+
   return (
     <footer className={styles.footer}>
       <div className={styles.grid}>
@@ -23,9 +27,9 @@ export function CatalogFooter() {
             <span className={styles.brandName}>OLDA</span>
           </div>
           <address className={styles.address}>
-            <span>Atelier OLDA</span>
-            <span>1 Rue Opales, Grand Case</span>
-            <span>Saint‑Martin (French West Indies)</span>
+            {addressLines.map((line, i) => (
+              <span key={i}>{line}</span>
+            ))}
           </address>
         </div>
 
@@ -52,11 +56,11 @@ export function CatalogFooter() {
           <dl className={styles.dataList}>
             <div className={styles.dataRow}>
               <dt className={styles.dataLabel}>IBAN</dt>
-              <dd className={styles.dataValue}>[À REMPLIR]</dd>
+              <dd className={styles.dataValue}>{c.iban || "—"}</dd>
             </div>
             <div className={styles.dataRow}>
               <dt className={styles.dataLabel}>BIC</dt>
-              <dd className={styles.dataValue}>[À REMPLIR]</dd>
+              <dd className={styles.dataValue}>{c.bic || "—"}</dd>
             </div>
           </dl>
         </div>
@@ -82,16 +86,13 @@ export function CatalogFooter() {
           <dl className={styles.dataList}>
             <div className={styles.dataRow}>
               <dt className={styles.dataLabel}>SIRET</dt>
-              <dd className={styles.dataValue}>[À COMPLÉTER]</dd>
+              <dd className={styles.dataValue}>{c.siret || "—"}</dd>
             </div>
             <div className={styles.dataRow}>
               <dt className={styles.dataLabel}>Contact</dt>
               <dd className={styles.dataValue}>
-                <a
-                  href="mailto:atelierolda@gmail.com"
-                  className={styles.emailLink}
-                >
-                  atelierolda@gmail.com
+                <a href={`mailto:${c.contactEmail}`} className={styles.emailLink}>
+                  {c.contactEmail}
                 </a>
               </dd>
             </div>
@@ -101,7 +102,7 @@ export function CatalogFooter() {
 
       {/* ── Copyright ── */}
       <p className={styles.copyright}>
-        © {new Date().getFullYear()} Atelier Olda · Tous droits réservés.
+        © {new Date().getFullYear()} {c.brandName} · Tous droits réservés.
       </p>
     </footer>
   );
