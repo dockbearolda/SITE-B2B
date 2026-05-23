@@ -427,7 +427,11 @@
 
 .itemGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* auto-fill : le nombre de colonnes s'adapte à la largeur RÉELLE de la
+     colonne centrale (et non du viewport). minmax(min(100%, 300px), 1fr)
+     garantit que chaque carte fait au moins sa largeur naturelle (~292px),
+     donc la grille ne déborde jamais sous le panier de droite. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 20px;
 }
 
@@ -669,10 +673,7 @@
 /* ── Responsive ─────────────────────────────────────────────── */
 
 @media (max-width: 1080px) {
-  .itemGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  /* .itemGrid : géré par auto-fill (voir règle de base) — aucun override ici. */
   .listHeader,
   .listRow {
     grid-template-columns: 48px 80px 1fr 120px auto;
