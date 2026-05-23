@@ -2,6 +2,22 @@
 
 Base Next.js premium et légère pour lancer un site vitrine B2B à partir du catalogue produit fourni.
 
+## Démarrage local
+
+Prérequis : [Node.js 20+](https://nodejs.org).
+
+```bash
+npm install        # installe les dépendances (+ prisma generate)
+npm run dev        # démarre le serveur de développement
+```
+
+Le site est alors disponible sur http://localhost:3000.
+
+Aucune configuration n'est nécessaire pour démarrer : le catalogue s'affiche à
+partir des données statiques (`src/data/catalog.ts`). Pour activer la base de
+données, la connexion ou l'envoi d'e-mails, copie `.env.example` en `.env.local`
+et renseigne les variables souhaitées.
+
 ## Pourquoi ce stack
 
 - `Next.js + App Router` pour un rendu rapide, sobre et facile à faire évoluer.
