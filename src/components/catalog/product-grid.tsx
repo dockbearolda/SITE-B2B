@@ -100,19 +100,45 @@ function formatPrice(val: number): string {
 // ── Pricing block component ──────────────────────────────────────
 function PricingBlock({ achat, revente }: { achat?: number; revente?: number }) {
   if (!achat && !revente) return null;
+
+  // Cas dégradé : un seul prix disponible
+  if (!achat || !revente) {
+    return (
+      <div className={styles.pricingBlock}>
+        <span className={styles.colLabel}>{achat ? "Achat" : "Revente"}</span>
+        <span className={styles.colVal}>{formatPrice((achat ?? revente)!)}</span>
+      </div>
+    );
+  }
+
+  const marge = revente - achat;
+
   return (
     <div className={styles.pricingBlock}>
-      <span className={styles.priceLabelSmall}>Votre prix d&rsquo;achat</span>
-      <span className={styles.priceMain}>
-        {achat ? formatPrice(achat) : revente ? formatPrice(revente) : "—"}
-      </span>
-      {revente && achat && (
-        <div className={styles.priceSecondary}>
-          <span className={styles.pricePvc}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }}>
-              <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+      {/* Colonne gauche : Achat */}
+      <div className={styles.colAchat}>
+        <span className={styles.colLabel}>Achat</span>
+        <span className={styles.colVal}>{formatPrice(achat)}</span>
+      </div>
+
+      {/* Flèche centrale */}
+      <span className={styles.colArrow} aria-hidden="true">→</span>
+
+      {/* Colonne droite : Revente */}
+      <div className={styles.colRevente}>
+        <span className={styles.colLabel}>Revente</span>
+        <span className={`${styles.colVal} ${styles.colValRevente}`}>{formatPrice(revente)}</span>
+      </div>
+
+      {/* Badge marge — seulement si revente > achat */}
+      {marge > 0 && (
+        <div className={styles.marginRow}>
+          <span className={styles.marginBadge}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
             </svg>
-            {formatPrice(revente)} boutique
+            +{formatPrice(marge)}&nbsp;de marge
           </span>
         </div>
       )}
