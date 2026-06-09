@@ -76,7 +76,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // ── 0. Accès admin par mot de passe unique ──
         // Permet au patron d'entrer dans /admin avec UN seul mot de passe (sans email).
-        const adminPassword = "olda38380";
+        const adminPassword = "olda28280";
         if (password === adminPassword) {
           const adminEmail =
             (process.env.ADMIN_EMAILS ?? "").split(",")[0]?.trim().toLowerCase() || "admin@olda";
