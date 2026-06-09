@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 
 import { CartButton } from "@/components/cart/cart-button";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import { AdminBubble } from "@/components/layout/admin-bubble";
 
 import { CartProvider } from "@/lib/cart-context";
 import { CartDrawerProvider } from "@/lib/cart-drawer-context";
@@ -61,6 +62,7 @@ export default function RootLayout({
                     {children}
                     <CartButton />
                     <CartDrawer />
+                    <AdminBubble />
                   </ToastProvider>
                 </ProjectsDrawerProvider>
               </CartDrawerProvider>
