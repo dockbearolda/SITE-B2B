@@ -17,7 +17,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/mon-compte/commandes";
 
-  const [tab, setTab] = useState<Tab>("login");
+  const [tab, setTab] = useState<Tab>(callbackUrl.startsWith("/admin") ? "admin" : "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");

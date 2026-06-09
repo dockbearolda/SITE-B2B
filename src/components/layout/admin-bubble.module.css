@@ -1,0 +1,25 @@
+.bubble {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  padding: 10px 18px;
+  border-radius: 100px;
+  background: var(--color-dark, #111);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+  opacity: 0.85;
+  transition: transform 140ms ease, opacity 140ms ease, box-shadow 140ms ease;
+}
+
+.bubble:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 26px rgba(0, 0, 0, 0.24);
+}
